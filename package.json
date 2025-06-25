@@ -1,0 +1,29 @@
+{
+  "name": "wenku8-download",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "fateking27",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "set NODE_ENV=development&&nodemon index.js",
+    "dev:start": "node index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.5.3",
+    "@lesjoursfr/html-to-epub": "^4.5.1",
+    "axios": "^1.9.0",
+    "body-parser": "^2.2.0",
+    "cheerio": "1.0.0",
+    "cli-table3": "^0.6.5",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
+    "express": "^5.1.0",
+    "html-to-text": "^9.0.5",
+    "iconv-lite": "0.6.3",
+    "image-size": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "ora": "^8.2.0"
+  }
+}

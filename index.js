@@ -163,7 +163,7 @@ const start = async () => {
               // 打开目录
               exec(
                 `start "" "${import.meta.dirname}/novels/${
-                  num_res === 1 ? "epub" : "txt"
+                  novel_dl_select === 1 ? "epub" : "txt"
                 }/${novel_detail.name}"`
               );
             }

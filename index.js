@@ -6,7 +6,6 @@ import { exec } from "child_process";
 import { getNovelDetail } from "./src/getNovelDetal.cjs";
 
 import { htmlToEpub } from "./src/htmlTo/epub.js";
-
 console.log(
   styleText("green", "欢迎使用wenku8轻小说文库下载器，https://xxx.xxx.top\n")
 );

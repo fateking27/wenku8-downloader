@@ -4,7 +4,6 @@ const iconv = require("iconv-lite");
 const fs = require("fs");
 const path = require("path");
 
-//浏览器库
 const userAgents = [
   "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12",
   "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
@@ -45,7 +44,6 @@ const returnIp = () => {
   );
 };
 
-
 const wenku8Login = async (req, res) => {
   const formData = new FormData();
   formData.append("username", "fk233");
@@ -63,29 +61,17 @@ const wenku8Login = async (req, res) => {
     .catch((error) => {
       res.send({ code: error.status, msg: "登录失败", data: null });
     });
-
   if (!loginRes) return;
-
-  // console.log(iconv.decode(loginRes.data, "gbk"));
-
   const cookies = loginRes.headers["set-cookie"].map((cookieItem) => {
     cookieItem = cookieItem.split(";")[0];
     return cookieItem;
   });
   wenku8Cookie.cookie = cookies[1];
-
   fs.writeFileSync(
     path.resolve(__dirname, "../../utils/wenku8.json"),
     JSON.stringify(wenku8Cookie),
     { encoding: "utf-8" }
   );
-  if (res) {
-    res.send({
-      code: 200,
-      msg: "登录成功！",
-      data: null,
-    });
-  }
 };
 
 const reqInit = (indexRes) => {

@@ -1,5 +1,6 @@
 /.env
 /node_modules
 /novels
+/插图
 
 /logs/*

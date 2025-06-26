@@ -1,6 +1,25 @@
 import { reqInit } from "./request/index.cjs";
-import { axiosCreate, CancelToken } from "../utils/axios.cjs";
+import { axiosCreate } from "../utils/axios.cjs";
 import * as cheerio from "cheerio";
+import * as fs from "fs";
+import * as path from "path";
+import ora from "ora";
+import { styleText } from "util";
+
+const __dirname = import.meta.dirname;
+const spinner = ora();
+
+//递归创建多级目录
+const mkdirsSync = async (dirname) => {
+  if (fs.existsSync(dirname)) {
+    return true;
+  } else {
+    if (mkdirsSync(path.dirname(dirname))) {
+      fs.mkdirSync(dirname);
+      return true;
+    }
+  }
+};
 
 // 获取小说目录
 const getNovelChapters = async (novelId) => {
@@ -109,8 +128,7 @@ const getChapterContent = async (novelId, chapterId) => {
   if (!indexRes && statusCode === 404) {
     return false;
   } else if (!indexRes) {
-    // console.log(`请求失败，正在重试...`);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 等待10秒后重试
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
     return await getChapterContent(novelId, chapterId);
   }
 
@@ -129,4 +147,36 @@ const getChapterContent = async (novelId, chapterId) => {
   return contentMain.html();
 };
 
-export { getNovelChapters, getChapterContent };
+//下载小说插图
+const downloadNovelImages = async (url, obj) => {
+  const fileName = url.split("/").pop();
+  spinner.start("插图下载中：" + styleText(["magenta"], `${url}`));
+  let statusCode = null;
+  const indexRes = await axiosCreate
+    .get(url, {
+      ...reqInit().config,
+    })
+    .catch((error) => {
+      if (error.status == 404) {
+        statusCode = 404;
+      }
+    });
+
+  if (!indexRes && statusCode === 404) {
+    return false;
+  } else if (!indexRes) {
+    await new Promise((resolve) => setTimeout(resolve, 10000)); // 等待10秒后重试
+    return await downloadNovelImages(url);
+  }
+
+  const dirPath = path.join(
+    __dirname,
+    `../插图/${obj.novelName}/${obj.chapterName}`
+  );
+  await mkdirsSync(dirPath);
+  const filePath = path.join(dirPath, fileName);
+  fs.writeFileSync(filePath, indexRes.data);
+  spinner.succeed("插图下载完成：" + styleText(["magenta"], `${fileName}`));
+};
+
+export { getNovelChapters, getChapterContent, downloadNovelImages };

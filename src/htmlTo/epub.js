@@ -7,18 +7,13 @@ import url from "url";
 import ora from "ora";
 import {
   existsSync,
-  readdirSync,
-  statSync,
   mkdirSync,
-  readFileSync,
-  writeFileSync,
 } from "fs";
 import {
   getNovelChapters,
   getChapterContent,
   downloadNovelImages,
 } from "../download.js";
-import { confirm } from "@inquirer/prompts";
 import { styleText } from "util";
 
 const __dirname = import.meta.dirname; // 获取当前文件路径

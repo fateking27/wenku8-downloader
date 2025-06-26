@@ -6,8 +6,12 @@ import { exec } from "child_process";
 import { getNovelDetail } from "./src/getNovelDetal.cjs";
 
 import { htmlToEpub } from "./src/htmlTo/epub.js";
+import { htmlToTxt } from "./src/htmlTo/txt.js";
 console.log(
-  styleText("green", "欢迎使用wenku8轻小说文库下载器，https://xxx.xxx.top\n")
+  styleText(
+    "green",
+    "欢迎使用wenku8轻小说文库下载器，https://github.com/fateking27/wenku8Downloader\n"
+  )
 );
 
 const start = async () => {
@@ -33,16 +37,18 @@ const start = async () => {
         value: 3,
         // description: "yarn is an awesome package manager",
       },
+      {
+        name: "下载小说插图",
+        value: 4,
+        // description: "yarn is an awesome package manager",
+      },
     ],
   });
 
   if (answer_1 === 3) {
     const select_res = await select({
-      message: "选择查询方式",
+      message: "查询方式",
       default: 1,
-      instructions: {
-        navigation: "请使用方向键选择",
-      },
       choices: [
         {
           name: "ID查询",
@@ -129,23 +135,23 @@ const start = async () => {
       }).then(async (res) => {
         if (res) {
           const novel_dl_select = await select({
-            message: "选择下载小说格式",
+            message: "下载的小说格式",
             default: 1,
             choices: [
               {
                 name: "epub",
                 value: 1,
               },
-              // {
-              //   name: "txt",
-              //   value: 2,
-              // },
+              {
+                name: "txt",
+                value: 2,
+              },
             ],
           });
           if (novel_dl_select === 1) {
             await htmlToEpub(num_res);
           } else if (novel_dl_select === 2) {
-            // 这里可以添加下载txt格式小说的逻辑
+            await htmlToTxt(num_res);
           }
 
           await confirm({
@@ -156,9 +162,9 @@ const start = async () => {
             if (res) {
               // 打开目录
               exec(
-                `start "" "${import.meta.dirname}/novels/epub/${
-                  novel_detail.name
-                }"`
+                `start "" "${import.meta.dirname}/novels/${
+                  num_res === 1 ? "epub" : "txt"
+                }/${novel_detail.name}"`
               );
             }
           });
@@ -166,11 +172,25 @@ const start = async () => {
           console.log("已取消下载");
         }
       });
-      // .catch((error) => {
-      //   console.error("发生错误:", error);
-      // });
     }
   }
+
+  // switch (answer_1) {
+  //   case 1:
+  //     // 热门小说
+  //     break;
+  //   case 2:
+  //     // 近期更新小说
+  //     break;
+  //   case 3:
+  //     // 查询小说
+  //     break;
+  //   case 4:
+  //     // 下载小说插图
+  //     const novel_id = await input({ message: "请输入小说ID" });
+
+  //     break;
+  // }
 
   await start(); // 重新开始操作
 };

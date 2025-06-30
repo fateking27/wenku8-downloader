@@ -1,12 +1,15 @@
-const cheerio = require("cheerio");
-const { axiosCreate, CancelToken } = require("../utils/axios.cjs");
-// const wenku8Cookie = require("../../../utils/wenku8.json");
-const { reqInit } = require("./request/index.cjs");
-// const fs = require("fs");
-// const path = require("path");
+import * as cheerio from "cheerio";
+import { axiosCreate, CancelToken } from "../utils/axios.cjs";
+import { reqInit } from "./request/index.cjs";
+import ora from "ora";
+import Table from "cli-table3";
+import { styleText } from "util";
+
+const spinner = ora();
 
 //获取小说详情
-const getNovelDetail = async (novelId) => {
+export const getNovelDetail = async (novelId) => {
+  spinner.start("正在获取小说信息...");
   let statusCode = null;
   const indexRes = await axiosCreate
     .get(`https://www.wenku8.net/book/${novelId}.htm`, {
@@ -18,6 +21,9 @@ const getNovelDetail = async (novelId) => {
       }
     });
   if (!indexRes && statusCode === 404) {
+    spinner.fail(
+      styleText("yellowBright", "小说不存在或获取失败，请检查ID或名称是否正确")
+    );
     return false;
   } else if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 10000)); // 等待10秒后重试
@@ -70,10 +76,56 @@ const getNovelDetail = async (novelId) => {
   });
 
   if (!novel_detail.name) {
+    spinner.fail(
+      styleText("yellowBright", "小说不存在或获取失败，请检查ID或名称是否正确")
+    );
     return false;
+  }
+  spinner.succeed(styleText("green", "小说详情获取成功"));
+  console.log(`简介：${novel_detail.brief}`);
+  const table = new Table({
+    head: [
+      "小说名",
+      "作者",
+      "标签",
+      "状态",
+      "更新时间",
+      "全文字数",
+      "最新章节",
+    ],
+    style: {
+      head: ["red"],
+      border: ["green"],
+    },
+    truncate: "...",
+  });
+
+  //输出table表格
+  table.push([
+    novel_detail.name,
+    novel_detail.author,
+    novel_detail.tags,
+    novel_detail.status,
+    novel_detail.updatetime,
+    novel_detail.article_length,
+    novel_detail.latest_chapter,
+  ]);
+
+  console.log(table.toString());
+
+  if (
+    !novel_detail.article_length &&
+    !novel_detail.latest_chapter &&
+    !novel_detail.updatetime
+  ) {
+    spinner.warn(
+      styleText(
+        "yellowBright",
+        "文库已下架该小说，暂不支持下载已下架的小说内容，请等待后续更新\n"
+      )
+    );
+    return;
   }
 
   return novel_detail;
 };
-
-module.exports = { getNovelDetail };

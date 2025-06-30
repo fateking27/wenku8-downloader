@@ -44,23 +44,29 @@ const returnIp = () => {
   );
 };
 
-const wenku8Login = async (req, res) => {
+const wenku8Login = async () => {
   const formData = new FormData();
   formData.append("username", "fk233");
   formData.append("password", "test233");
   // formData.append("checkcode", "5095");
-  formData.append("usecookie", "0");
+  formData.append("usecookie", "315360000");
   formData.append("action", "login");
   formData.append("submit", " 登  录 ");
   const loginRes = await axiosCreate
     .post(
       "https://www.wenku8.net/login.php?do=submit&jumpurl=https://www.wenku8.net/index.php",
       formData,
-      { responseType: "arraybuffer" }
+      {
+        responseType: "arraybuffer",
+        headers: {
+          referer:
+            "https://www.wenku8.net/login.php?jumpurl=http%3A%2F%2Fwww.wenku8.net%2Findex.php",
+          "User-Agent": randomHead(),
+          "X-Forwarded-For": returnIp(),
+        },
+      }
     )
-    .catch((error) => {
-      res.send({ code: error.status, msg: "登录失败", data: null });
-    });
+    .catch(() => {});
   if (!loginRes) return;
   const cookies = loginRes.headers["set-cookie"].map((cookieItem) => {
     cookieItem = cookieItem.split(";")[0];
@@ -87,7 +93,7 @@ const reqInit = (indexRes) => {
   };
   let html = null;
   if (indexRes) {
-    html = iconv.decode(indexRes.data, "gbk"); //将gbk编码解码为字符串
+    html = iconv.decode(indexRes.data, "gbk"); //将gbk编码解码为utf-8
   }
   return {
     config,

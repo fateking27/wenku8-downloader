@@ -128,7 +128,7 @@ const getChapterContent = async (novelId, chapterId) => {
   if (!indexRes && statusCode === 404) {
     return false;
   } else if (!indexRes) {
-    await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // 等待3秒后重试
     return await getChapterContent(novelId, chapterId);
   }
 

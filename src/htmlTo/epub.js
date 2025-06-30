@@ -5,10 +5,7 @@ import { imageSize } from "image-size";
 import https from "https";
 import url from "url";
 import ora from "ora";
-import {
-  existsSync,
-  mkdirSync,
-} from "fs";
+import { existsSync, mkdirSync } from "fs";
 import {
   getNovelChapters,
   getChapterContent,
@@ -46,6 +43,10 @@ const htmlToEpub = async (novel_id) => {
   for (const item of chapterVolume) {
     if (item.children.length) {
       const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
+      if (existsSync(`${epubDirPath}/${novelData.title} ${chapterName}.epub`)) {
+        // console.log(`章节《${item.chapter}》已存在`);
+        continue;
+      }
       let chapterContents = [];
       let epubCover = "";
       for (const chapter of item.children) {
@@ -133,7 +134,9 @@ const htmlToEpub = async (novel_id) => {
         {
           title: `${chapterName}`,
           author: novelData.author.split("：")[1],
-          cover: epubCover,
+          cover: epubCover
+            ? epubCover
+            : `${path.join(__dirname, "../../assets/nocover.jpg")}`,
           // useFirstImageAsCover: true,
           // publisher: "",
           tocTitle: "目录",

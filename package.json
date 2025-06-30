@@ -7,7 +7,6 @@
   "type": "module",
   "scripts": {
     "dev": "set NODE_ENV=development&&nodemon index.js",
-    "dev:start": "node index.js",
     "start": "node index.js"
   },
   "dependencies": {
@@ -25,5 +24,16 @@
     "image-size": "^2.0.2",
     "nodemon": "^3.1.10",
     "ora": "^8.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fateking27/wenku8Downloader.git"
+  },
+  "keywords": [
+    "wenku8",
+    "downloader",
+    "nodejs",
+    "wenku",
+    "cli"
+  ]
 }

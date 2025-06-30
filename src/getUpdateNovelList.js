@@ -16,8 +16,8 @@ export const getUpdateNovelList = async () => {
       // console.log(error.stack);
     });
   if (!indexRes) {
-    // await wenku8Login();
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
+    await wenku8Login();
     return await getUpdateNovelList();
   }
   const cookies = indexRes.headers["set-cookie"];
@@ -25,7 +25,6 @@ export const getUpdateNovelList = async () => {
     await wenku8Login();
     return await getUpdateNovelList();
   }
-  spinner.succeed(styleText(["green"], "数据请求成功"));
   const $ = cheerio.load(reqInit(indexRes).html);
   const novelList = [];
   $("#centers .block:eq(4)>.blockcontent")
@@ -41,5 +40,11 @@ export const getUpdateNovelList = async () => {
       novel.author_uptime = $(element).next().text();
       novelList.push(novel);
     });
+  if (novelList.length === 0) {
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
+    await wenku8Login();
+    return await getUpdateNovelList();
+  }
+  spinner.succeed(styleText(["green"], "数据请求成功"));
   return novelList;
 };

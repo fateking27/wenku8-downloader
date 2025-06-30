@@ -1,17 +1,22 @@
-import { select, checkbox, confirm, input, number } from "@inquirer/prompts";
-import { styleText } from "util";
-import Table from "cli-table3";
+import { confirm,  number } from "@inquirer/prompts";
 import ora from "ora";
 
 import { getNovelDetail } from "../../../getNovelDetal.js";
 
 import { novel_dl_select } from "../../novel_dl_select.js";
 
-const spinner = ora();
-
 export const option_1_1 = async () => {
   const answer = await number({
     message: "请输入小说ID",
+    validate: (input) => {
+      if (isNaN(input)) {
+        return "请输入数字";
+      } else if (input < 0) {
+        return "请输入大于0的数字";
+      } else {
+        return true;
+      }
+    },
   });
 
   const novel_detail = await getNovelDetail(answer);

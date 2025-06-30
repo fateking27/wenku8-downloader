@@ -1,6 +1,7 @@
-import { select, checkbox, confirm, input, number } from "@inquirer/prompts";
+import { select } from "@inquirer/prompts";
 import { option_1_1 } from "./option_1_1/index.js";
-import { options } from "../index.js";
+import { option_1_2 } from "./option_1_2/index.js";
+import { option_1_3 } from "./option_1_3/index.js";
 
 export const option_1 = async () => {
   const answer = await select({
@@ -12,16 +13,12 @@ export const option_1 = async () => {
         value: 1,
       },
       {
-        name: "小说名查询",
+        name: "小说标题查询",
         value: 2,
       },
       {
-        name: "作者名查询",
+        name: "作者名称查询",
         value: 3,
-      },
-      {
-        name: "返回上一步",
-        value: 0,
       },
     ],
   });
@@ -31,10 +28,10 @@ export const option_1 = async () => {
       await option_1_1();
       break;
     case 2:
-      // await option_3_2();
+      await option_1_2();
       break;
-    case 0:
-      await options();
+    case 3:
+      await option_1_3();
       break;
     default:
       break;

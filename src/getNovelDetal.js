@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { axiosCreate, CancelToken } from "../utils/axios.cjs";
+import { axiosCreate } from "../utils/axios.cjs";
 import { reqInit } from "./request/index.cjs";
 import ora from "ora";
 import Table from "cli-table3";

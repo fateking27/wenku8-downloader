@@ -6,22 +6,8 @@ console.log(
     "欢迎使用wenku8轻小说文库下载器，https://github.com/fateking27/wenku8Downloader\n"
   )
 );
-import iconv from "iconv-lite";
 
 const start = async () => {
-  // let utf8Str = "雨森";
-  // let gbkBuffer = iconv.encode(utf8Str, "gbk");
-  // console.log(
-  //   "%" +
-  //     gbkBuffer
-  //       .toString("hex")
-  //       .match(/.{1,2}/g)
-  //       .join("%")
-  // );
-  // let gbkStr = iconv.decode(gbkBuffer, "gbk");
-  // console.log(gbkStr);
-
-  // return;
   await options();
   await start(); // 重新开始操作
 };

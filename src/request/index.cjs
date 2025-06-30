@@ -83,7 +83,7 @@ const wenku8Login = async () => {
 const reqInit = (indexRes) => {
   const config = {
     withCredentials: true,
-    responseType: "arraybuffer", //发送请求时设置编码为'binary'(字符解码时此操作不可忽略)
+    responseType: "arraybuffer",
     headers: {
       Cookie: wenku8Cookie.cookie,
       referer: "https://www.wenku8.net/index.php",

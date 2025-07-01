@@ -9,7 +9,10 @@ const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
 const htmlToTxt = async (novel_id) => {
+  spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
+  spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
+
   const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
 
   //递归创建多级目录

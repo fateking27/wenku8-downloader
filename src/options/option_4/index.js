@@ -25,6 +25,7 @@ export const option_4 = async () => {
       message: "请选择",
       choices: data,
       pageSize: 15,
+      loop: false,
     });
     const novel_detail = await getNovelDetail(answer);
     await confirm({

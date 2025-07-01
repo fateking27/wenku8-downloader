@@ -1,6 +1,7 @@
 import { select, checkbox, confirm, input, number } from "@inquirer/prompts";
 import { htmlToEpub } from "../htmlTo/epub.js";
 import { htmlToTxt } from "../htmlTo/txt.js";
+import { onlyImage } from "../htmlTo/onlyImage.js";
 import { exec } from "child_process";
 import path from "path";
 
@@ -12,27 +13,43 @@ export const novel_dl_select = async (novelId, novel_detail) => {
       {
         name: "Epub",
         value: 1,
-        description: "Epub格式小说",
+        description: "Epub格式",
       },
       {
         name: "TXT",
         value: 2,
-        description: "TXT格式小说",
+        description: "TXT格式",
       },
       {
         name: "插图",
         value: 3,
-        description: "仅下载插图，不下载小说",
+        description: "仅下载插图",
       },
     ],
   });
+  // await select({
+  //   message: "请选择",
+  //   default: 1,
+  //   choices: [
+  //     {
+  //       name: "全卷下载",
+  //       value: 1,
+  //     },
+  //     {
+  //       name: "自定义下载（多选）",
+  //       value: 2,
+  //     },
+  //   ],
+  // });
   if (answer === 1) {
     await htmlToEpub(novelId);
   } else if (answer === 2) {
     await htmlToTxt(novelId);
+  } else if (answer === 3) {
+    await onlyImage(novelId);
   }
   await confirm({
-    message: "小说下载完成，是否打开目录?",
+    message: "下载完毕，是否打开目录?",
     default: true,
     transformer: (value) => (value ? "YES" : "NO"),
   }).then((res) => {
@@ -41,7 +58,9 @@ export const novel_dl_select = async (novelId, novel_detail) => {
       exec(
         `start "" "${path.join(
           import.meta.dirname,
-          `../../novels//${answer === 1 ? "epub" : "txt"}/${novel_detail.name}`
+          `../..${answer !== 3 ? "/novels" : ""}/${
+            answer === 1 ? "epub" : answer === 2 ? "txt" : "插图"
+          }/${novel_detail.name}`
         )}"`
       );
     }

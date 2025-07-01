@@ -8,14 +8,10 @@ import iconv from "iconv-lite";
 const spinner = ora();
 
 export const search = async (keyword, searchtype) => {
-  let gbkBuffer = await new Promise((resolve) =>
-    resolve(iconv.encode(keyword, "gbk"))
-  ); // 将keyword关键字转为GBK编码的buffer
-  let keywordStr = `%${gbkBuffer
-    .toString("hex")
-    .match(/.{1,2}/g)
-    .join("%")}`; // 将GBK编码的buffer转换为符合URL编码的十六进制字符
-  const url = `https://www.wenku8.net/modules/article/search.php?searchtype=${searchtype}&searchkey=${keywordStr}`;
+  let gbkBuffer = iconv.encode(keyword, "gbk"); // 将keyword关键字转为GBK编码的buffer
+  const hexArr = gbkBuffer.toString("hex").match(/.{1,2}/g);
+  let keywordStr = hexArr.join("%"); // 将GBK编码的buffer转换为符合URL编码的十六进制字符
+  const url = `https://www.wenku8.net/modules/article/search.php?searchtype=${searchtype}&searchkey=%${keywordStr}`;
   spinner.start(styleText("blueBright", "正在请求数据..."));
   const indexRes = await axiosCreate
     .get(url, {
@@ -27,12 +23,12 @@ export const search = async (keyword, searchtype) => {
   if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
     await wenku8Login();
-    return await search();
+    return await search(keyword, searchtype);
   }
   const cookies = indexRes.headers["set-cookie"];
   if (!cookies) {
     await wenku8Login();
-    return await search();
+    return await search(keyword, searchtype);
   }
   const $ = cheerio.load(reqInit(indexRes).html);
   let novelList = [];
@@ -67,7 +63,7 @@ export const search = async (keyword, searchtype) => {
     if (!novel_detail.name) {
       await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
       await wenku8Login();
-      return await search();
+      return await search(keyword, searchtype);
     }
     novelList.push(novel_detail);
     spinner.succeed(styleText("green", "数据请求成功"));

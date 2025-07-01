@@ -165,8 +165,8 @@ const downloadNovelImages = async (url, obj) => {
   if (!indexRes && statusCode === 404) {
     return false;
   } else if (!indexRes) {
-    await new Promise((resolve) => setTimeout(resolve, 10000)); // 等待10秒后重试
-    return await downloadNovelImages(url);
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // 等待3秒后重试
+    return await downloadNovelImages(url, obj);
   }
 
   const dirPath = path.join(

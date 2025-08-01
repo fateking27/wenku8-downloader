@@ -32,6 +32,10 @@ export const option_1_2 = async () => {
       choices: data,
     });
     const novel_detail = await getNovelDetail(answer);
+    if (!novel_detail) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return;
+    }
     await confirm({
       message: "是否下载该小说?",
       default: true,

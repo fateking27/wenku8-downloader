@@ -12,9 +12,7 @@ export const getUpdateNovelList = async () => {
     .get(`https://www.wenku8.net/index.php`, {
       ...reqInit().config,
     })
-    .catch((error) => {
-      // console.log(error.stack);
-    });
+    .catch();
   if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
     await wenku8Login();

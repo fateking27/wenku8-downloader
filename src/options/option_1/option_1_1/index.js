@@ -1,8 +1,5 @@
 import { confirm,  number } from "@inquirer/prompts";
-import ora from "ora";
-
 import { getNovelDetail } from "../../../getNovelDetal.js";
-
 import { novel_dl_select } from "../../novel_dl_select.js";
 
 export const option_1_1 = async () => {
@@ -22,7 +19,7 @@ export const option_1_1 = async () => {
   const novel_detail = await getNovelDetail(answer);
 
   if (!novel_detail) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return;
   }
   await confirm({

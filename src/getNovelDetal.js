@@ -4,12 +4,14 @@ import { reqInit } from "./request/index.cjs";
 import ora from "ora";
 import Table from "cli-table3";
 import { styleText } from "util";
+import { getBookMeta, getBookIntro } from "../src/api/index.js";
+import { xmlToJson } from "../utils/xmlToJson.js";
 
 const spinner = ora();
 
 //获取小说详情
 export const getNovelDetail = async (novelId) => {
-  spinner.start("正在获取小说信息...");
+  spinner.start("正在获取小说详情...");
   let statusCode = null;
   const indexRes = await axiosCreate
     .get(`https://www.wenku8.net/book/${novelId}.htm`, {
@@ -85,6 +87,7 @@ export const getNovelDetail = async (novelId) => {
   console.log(`简介：${novel_detail.brief}`);
   const table = new Table({
     head: [
+      "ID",
       "小说名",
       "作者",
       "标签",
@@ -100,8 +103,33 @@ export const getNovelDetail = async (novelId) => {
     truncate: "...",
   });
 
+  if (
+    !novel_detail.article_length &&
+    !novel_detail.latest_chapter &&
+    !novel_detail.updatetime
+  ) {
+    await getBookMeta({
+      meta: "meta",
+      novel_id: novelId,
+      t: "0",
+    }).then(async (res) => {
+      novel_detail.app = true;
+      const result = await xmlToJson(res.data);
+      result.metadata.data.forEach((item) => {
+        if (item.$.name === "BookLength") {
+          novel_detail.article_length = item.$.value;
+        } else if (item.$.name === "LastUpdate") {
+          novel_detail.updatetime = item.$.value;
+        } else if (item.$.name === "LatestSection") {
+          novel_detail.latest_chapter = item._;
+        }
+      });
+    });
+  }
+
   //输出table表格
   table.push([
+    novel_detail.id,
     novel_detail.name,
     novel_detail.author,
     novel_detail.tags,
@@ -110,22 +138,7 @@ export const getNovelDetail = async (novelId) => {
     novel_detail.article_length,
     novel_detail.latest_chapter,
   ]);
-
   console.log(table.toString());
-
-  if (
-    !novel_detail.article_length &&
-    !novel_detail.latest_chapter &&
-    !novel_detail.updatetime
-  ) {
-    spinner.warn(
-      styleText(
-        "yellowBright",
-        "文库已下架该小说，暂不支持下载已下架的小说内容，请等待后续更新\n"
-      )
-    );
-    return;
-  }
 
   return novel_detail;
 };

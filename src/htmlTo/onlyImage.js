@@ -10,14 +10,47 @@ import {
   getChapterContent,
   downloadNovelImages,
 } from "../download.js";
+import { getBookList } from "../../src/api/index.js";
 import { styleText } from "util";
+import { xmlToJson } from "../../utils/xmlToJson.js";
 
 const spinner = ora();
 
-export const onlyImage = async (novel_id) => {
+export const onlyImage = async (novel_id, isApp = false) => {
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
-  const novelData = await getNovelChapters(novel_id.toString());
+
+  const novelData = await new Promise((resolve, reject) => {
+    if (isApp) {
+      getBookList({
+        list: "list",
+        novel_id,
+        t: new Date().getTime(),
+      }).then(async (res) => {
+        const result = await xmlToJson(res.data);
+        const dataList = result.package.volume.map((item) => {
+          const data = {};
+          data.id = item.$.vid;
+          data.title = item._.replace(/\n/g, "");
+          data.chapter = [];
+          for (const chapter of item.chapter) {
+            data.chapter.push({
+              id: chapter.$.cid,
+              title: chapter._.replace(/\n/g, ""),
+            });
+          }
+          return data;
+        });
+        console.log(dataList[0]);
+      });
+    } else {
+      getNovelChapters(novel_id.toString()).then((res) => {
+        resolve(res);
+      });
+    }
+  });
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
+
+  return;
 
   const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
 

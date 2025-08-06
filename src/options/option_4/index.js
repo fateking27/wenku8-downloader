@@ -21,7 +21,7 @@ export const option_4 = async () => {
       item.name += `  ${item.author_uptime}`;
     });
 
-    const answer = await select({
+    const answer = await rawlist({
       message: "请选择",
       choices: data,
       pageSize: 15,

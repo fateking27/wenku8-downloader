@@ -2,18 +2,19 @@ import { htmlToText } from "html-to-text";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { getNovelChapters, getChapterContent } from "../download.js";
+import { getBookText } from "../api/index.js";
 import { styleText } from "util";
 import ora from "ora";
 
 const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
-const htmlToTxt = async (novel_id) => {
+const htmlToTxt = async (novel_id, isApp) => {
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
 
-  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
+  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
 
   //递归创建多级目录
   const mkdirsSync = async (dirname) => {
@@ -38,7 +39,7 @@ const htmlToTxt = async (novel_id) => {
   for (const item of chapterVolume) {
     if (item.children.length) {
       //将名称中的特殊字符替换
-      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？");
+      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "：");
       for (const chapter of item.children) {
         if (chapter.title == "插图") {
           continue;
@@ -47,26 +48,30 @@ const htmlToTxt = async (novel_id) => {
           "开始下载：" +
             styleText(["magenta"], `${item.chapter}、${chapter.title}`)
         );
-        const html = await getChapterContent(novel_id, chapter.id);
-        if (!html) {
+        const html = isApp ? "" : await getChapterContent(novel_id, chapter.id);
+        if (!html && !isApp) {
           spinner.fail(
             styleText(["red"], `章节内容不存在: ${chapter.id}.${chapter.title}`)
           );
           continue;
         }
-        const text = htmlToText(html, {
-          wordwrap: 130,
-          ignoreHref: true,
-          ignoreImage: true,
-          selectors: [
-            {
-              selector: "#contentdp",
-              format: "skip",
-            },
-          ],
-        });
+        const text = isApp
+          ? await getBookText({ novel_id, chapter_id: chapter.id }).then(
+              (res) => res.data
+            )
+          : htmlToText(html, {
+              wordwrap: 130,
+              ignoreHref: true,
+              ignoreImage: true,
+              selectors: [
+                {
+                  selector: "#contentdp",
+                  format: "skip",
+                },
+              ],
+            });
         writeFileSync(
-          `${txtDirPath}/${novelData.title} ${chapterName}.txt`,
+          `${txtDirPath}/${novelName} ${chapterName}.txt`,
           `\n\n${text}\n`,
           {
             flag: "a", //追加写入
@@ -83,7 +88,7 @@ const htmlToTxt = async (novel_id) => {
   spinner.succeed(
     styleText(
       ["greenBright"],
-      "小说《" + novelData.title + "》下载完毕" + "，请在novels/txt目录下查看"
+      "小说《" + novelName + "》下载完毕" + "，请在novels/txt目录下查看"
     )
   );
 };

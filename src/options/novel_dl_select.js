@@ -12,6 +12,11 @@ export const novel_dl_select = async (novelId, novel_detail) => {
     choices: novel_detail.app
       ? [
           {
+            name: "TXT",
+            value: 2,
+            description: "TXT格式",
+          },
+          {
             name: "插图",
             value: 3,
             description: "仅下载插图",

@@ -11,7 +11,7 @@ export const getBookMeta = async (data) => {
   return await axios.post(`${baseURL}/android.php`, {
     appver: "1.21",
     request: toBase64String(
-      `action=book&do=${data.meta}&aid=${data.novel_id}&t=${data.t}`
+      `action=book&do=meta&aid=${data.novel_id}&t=0`
     ),
   });
 };
@@ -21,7 +21,7 @@ export const getBookIntro = async (data) => {
   return await axios.post(`${baseURL}/android.php`, {
     appver: "1.21",
     request: toBase64String(
-      `action=book&do=${data.intro}&aid=${data.novel_id}&t=${data.t}`
+      `action=book&do=intro&aid=${data.novel_id}&t=0`
     ),
   });
 };
@@ -36,7 +36,7 @@ export const getBookList = async (data) => {
   return await axios.post(`${baseURL}/android.php`, {
     appver: "1.21",
     request: toBase64String(
-      `action=book&do=${data.list}&aid=${data.novel_id}&t=${data.t}`
+      `action=book&do=list&aid=${data.novel_id}&t=0`
     ),
   });
 };
@@ -46,7 +46,7 @@ export const getBookText = async (data) => {
   return await axios.post(`${baseURL}/android.php`, {
     appver: "1.21",
     request: toBase64String(
-      `action=book&do=${data.text}&aid=${data.novel_id}&cid=${data.chapter_id}&t=${data.t}`
+      `action=book&do=text&aid=${data.novel_id}&cid=${data.chapter_id}&t=0`
     ),
   });
 };

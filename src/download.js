@@ -151,6 +151,18 @@ const getChapterContent = async (novelId, chapterId) => {
 const downloadNovelImages = async (url, obj) => {
   const fileName = url.split("/").pop();
   spinner.start("插图下载中：" + styleText(["magenta"], `${url}`));
+  //判断插图是否已存在
+  if (
+    fs.existsSync(
+      path.join(
+        __dirname,
+        `../插图/${obj.novelName}/${obj.chapterName}/${fileName}`
+      )
+    )
+  ) {
+    spinner.succeed("插图下载完成：" + styleText(["magenta"], `${fileName}`));
+    return true;
+  }
   let statusCode = null;
   const indexRes = await axiosCreate
     .get(url, {

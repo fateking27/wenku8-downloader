@@ -9,46 +9,28 @@ export const novel_dl_select = async (novelId, novel_detail) => {
   const answer = await select({
     message: "开始下载",
     default: 1,
-    choices: novel_detail.app
-      ? [
-          {
-            name: "TXT",
-            value: 2,
-            description: "TXT格式",
-          },
-          {
-            name: "插图",
-            value: 3,
-            description: "仅下载插图",
-          },
-          {
-            name: "取消",
-            value: 4,
-            description: "取消下载",
-          },
-        ]
-      : [
-          {
-            name: "Epub",
-            value: 1,
-            description: "Epub格式",
-          },
-          {
-            name: "TXT",
-            value: 2,
-            description: "TXT格式",
-          },
-          {
-            name: "插图",
-            value: 3,
-            description: "仅下载插图",
-          },
-          {
-            name: "取消",
-            value: 4,
-            description: "取消下载",
-          },
-        ],
+    choices: [
+      {
+        name: "Epub",
+        value: 1,
+        description: "Epub格式",
+      },
+      {
+        name: "TXT",
+        value: 2,
+        description: "TXT格式",
+      },
+      {
+        name: "插图",
+        value: 3,
+        description: "仅下载插图",
+      },
+      {
+        name: "取消",
+        value: 4,
+        description: "取消下载",
+      },
+    ],
   });
   // await select({
   //   message: "请选择",

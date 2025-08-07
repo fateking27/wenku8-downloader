@@ -11,12 +11,13 @@ import {
   getChapterContent,
   downloadNovelImages,
 } from "../download.js";
+import { getBookText } from "../api/index.js";
 import { styleText } from "util";
 
 const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
-const htmlToEpub = async (novel_id) => {
+const htmlToEpub = async (novel_id, isApp) => {
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
@@ -47,7 +48,6 @@ const htmlToEpub = async (novel_id) => {
     if (item.children.length) {
       const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
       if (existsSync(`${epubDirPath}/${novelData.title} ${chapterName}.epub`)) {
-        // console.log(`章节《${item.chapter}》已存在`);
         continue;
       }
       let chapterContents = [];
@@ -59,7 +59,43 @@ const htmlToEpub = async (novel_id) => {
         );
 
         //获取HTML内容
-        let chapterContent = await getChapterContent(novel_id, chapter.id);
+        let chapterText = isApp
+          ? await getBookText({
+              novel_id,
+              chapter_id: chapter.id,
+            }).then((res) => res.data)
+          : null;
+
+        let chapterTextToHtml = chapterText
+          ? `<div id="contentmain">
+              <div id="content">
+                ${chapterText.replace(/^\s*$/gm, "<br>")} // 替换空白行为<br>标签
+              </div>
+            </div>`
+          : null;
+
+        if (chapter.title == "插图" && chapterText) {
+          let contentHtml = chapterText.replace(
+            /<!--image-->(.*?)<!--image-->/g,
+            (match, p1) => {
+              return `<div class="divimage">
+                <a href="${p1}" target="_blank">
+                  <img src="${p1}" border="0" class="imagecontent">
+                </a>
+              </div>\n`;
+            }
+          );
+
+          chapterTextToHtml = `<div id="contentmain">
+            <div id="content">
+              ${contentHtml}
+            </div>
+          </div>`;
+        }
+
+        let chapterContent = isApp
+          ? chapterTextToHtml
+          : await getChapterContent(novel_id, chapter.id);
         if (!chapterContent) {
           spinner.fail(
             styleText(

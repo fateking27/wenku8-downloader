@@ -22,7 +22,7 @@ const htmlToEpub = async (novel_id, isApp) => {
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
 
-  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
+  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
 
   //递归创建多级目录
   const mkdirsSync = async (dirname) => {
@@ -47,7 +47,8 @@ const htmlToEpub = async (novel_id, isApp) => {
   for (const item of chapterVolume) {
     if (item.children.length) {
       const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
-      if (existsSync(`${epubDirPath}/${novelData.title} ${chapterName}.epub`)) {
+      if (existsSync(`${epubDirPath}/${novelName} ${chapterName}.epub`)) {
+        num++;
         continue;
       }
       let chapterContents = [];
@@ -69,7 +70,10 @@ const htmlToEpub = async (novel_id, isApp) => {
         let chapterTextToHtml = chapterText
           ? `<div id="contentmain">
               <div id="content">
-                ${chapterText.replace(/^\s*$/gm, "<br>")} // 替换空白行为<br>标签
+                ${chapterText.replace(
+                  /^\s*$/gm,
+                  "<br>"
+                )} // 替换空白行为<br>标签
               </div>
             </div>`
           : null;
@@ -118,17 +122,20 @@ const htmlToEpub = async (novel_id, isApp) => {
               if (imgUrl) {
                 // 获取图片的尺寸
                 const options = url.parse(imgUrl);
-                https.get(options, function (response) {
-                  const chunks = [];
-                  response
-                    .on("data", function (chunk) {
-                      chunks.push(chunk);
-                    })
-                    .on("end", function () {
-                      const buffer = Buffer.concat(chunks);
-                      resolve(imageSize(buffer));
-                    });
-                });
+                https.get(
+                  options,
+                  function (response) {
+                    const chunks = [];
+                    response
+                      .on("data", function (chunk) {
+                        chunks.push(chunk);
+                      })
+                      .on("end", function () {
+                        const buffer = Buffer.concat(chunks);
+                        resolve(imageSize(buffer));
+                      });
+                  }
+                );
               }
             });
           });
@@ -183,7 +190,7 @@ const htmlToEpub = async (novel_id, isApp) => {
           content: chapterContents,
           // verbose: true,
         },
-        epubDirPath + `/${novelData.title} ${chapterName}.epub`
+        epubDirPath + `/${novelName} ${chapterName}.epub`
       );
       await epub.render().then(() => {
         spinner.succeed(
@@ -192,7 +199,7 @@ const htmlToEpub = async (novel_id, isApp) => {
               ["greenBright", "bold", "inverse"],
               ` ${num++}/${chapterVolume.length} `
             ) +
-            styleText(["magenta"], ` 【${novelData.title}】${item.chapter}`)
+            styleText(["magenta"], ` 【${novelName}】${item.chapter}`)
         );
       });
     }

@@ -5,11 +5,13 @@ import { getNovelChapters, getChapterContent } from "../download.js";
 import { getBookText } from "../api/index.js";
 import { styleText } from "util";
 import ora from "ora";
+import { checkbox } from "@inquirer/prompts";
 
 const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
-const htmlToTxt = async (novel_id, isApp) => {
+const htmlToTxt = async (novel_id, isApp, dlType) => {
+
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
@@ -35,7 +37,24 @@ const htmlToTxt = async (novel_id, isApp) => {
   await mkdirsSync(txtDirPath); // 如果目录不存在，则创建目录
 
   //分卷写入
-  const chapterVolume = novelData.chapters;
+  let chapterVolume = novelData.chapters;
+
+  if (dlType === "custom") {
+    const checkValue = await checkbox({
+      message: "请选择要下载的分卷",
+      instructions: "（使用空格选择，Enter确认）",
+      choices: chapterVolume.map((item) => ({
+        name: item.chapter,
+        value: item.id,
+      })),
+      pageSize: 10,
+      loop: false,
+    });
+    chapterVolume = chapterVolume.filter((item) =>
+      checkValue.includes(item.id)
+    );
+  }
+
   for (const item of chapterVolume) {
     if (item.children.length) {
       //将名称中的特殊字符替换

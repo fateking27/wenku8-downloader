@@ -1,5 +1,6 @@
 import { EPub } from "@lesjoursfr/html-to-epub";
 import { load } from "cheerio";
+import { checkbox } from "@inquirer/prompts";
 import path from "path";
 import { imageSize } from "image-size";
 import https from "https";
@@ -17,7 +18,7 @@ import { styleText } from "util";
 const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
-const htmlToEpub = async (novel_id, isApp) => {
+const htmlToEpub = async (novel_id, isApp, dlType) => {
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
@@ -42,7 +43,24 @@ const htmlToEpub = async (novel_id, isApp) => {
   );
 
   await mkdirsSync(epubDirPath); // 如果目录不存在，则创建目录
-  const chapterVolume = novelData.chapters;
+  let chapterVolume = novelData.chapters;
+
+  if (dlType === "custom") {
+    const checkValue = await checkbox({
+      message: "请选择要下载的分卷",
+      instructions: "（使用空格选择，Enter确认）",
+      choices: chapterVolume.map((item) => ({
+        name: item.chapter,
+        value: item.id,
+      })),
+      pageSize: 10,
+      loop: false,
+    });
+    chapterVolume = chapterVolume.filter((item) =>
+      checkValue.includes(item.id)
+    );
+  }
+
   let num = 1;
   for (const item of chapterVolume) {
     if (item.children.length) {
@@ -122,20 +140,17 @@ const htmlToEpub = async (novel_id, isApp) => {
               if (imgUrl) {
                 // 获取图片的尺寸
                 const options = url.parse(imgUrl);
-                https.get(
-                  options,
-                  function (response) {
-                    const chunks = [];
-                    response
-                      .on("data", function (chunk) {
-                        chunks.push(chunk);
-                      })
-                      .on("end", function () {
-                        const buffer = Buffer.concat(chunks);
-                        resolve(imageSize(buffer));
-                      });
-                  }
-                );
+                https.get(options, function (response) {
+                  const chunks = [];
+                  response
+                    .on("data", function (chunk) {
+                      chunks.push(chunk);
+                    })
+                    .on("end", function () {
+                      const buffer = Buffer.concat(chunks);
+                      resolve(imageSize(buffer));
+                    });
+                });
               }
             });
           });
@@ -157,6 +172,7 @@ const htmlToEpub = async (novel_id, isApp) => {
               downloadNovelImages(url, { novelName, chapterName })
             )
           );
+
           // 替换为本地图片地址
           contentMain.find("img").each((_, imgElement) => {
             const imgUrl = $(imgElement).attr("src");

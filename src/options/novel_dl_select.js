@@ -7,7 +7,7 @@ import path from "path";
 
 export const novel_dl_select = async (novelId, novel_detail) => {
   const answer = await select({
-    message: "开始下载",
+    message: "请选择下载格式",
     default: 1,
     choices: [
       {
@@ -32,29 +32,34 @@ export const novel_dl_select = async (novelId, novel_detail) => {
       },
     ],
   });
-  // await select({
-  //   message: "请选择",
-  //   default: 1,
-  //   choices: [
-  //     {
-  //       name: "全卷下载",
-  //       value: 1,
-  //     },
-  //     {
-  //       name: "自定义下载（多选）",
-  //       value: 2,
-  //     },
-  //   ],
-  // });
-  if (answer === 1) {
-    await htmlToEpub(novelId, novel_detail.app);
-  } else if (answer === 2) {
-    await htmlToTxt(novelId, novel_detail.app);
-  } else if (answer === 3) {
-    await onlyImage(novelId, novel_detail.app);
-  } else if (answer === 4) {
+
+  if (answer === 4) {
     return;
   }
+
+  const dlType = await select({
+    message: "请选择",
+    default: 1,
+    choices: [
+      {
+        name: "全卷下载",
+        value: "all",
+      },
+      {
+        name: "自定义分卷下载（多选）",
+        value: "custom",
+      },
+    ],
+  });
+
+  if (answer === 1) {
+    await htmlToEpub(novelId, novel_detail.app, dlType);
+  } else if (answer === 2) {
+    await htmlToTxt(novelId, novel_detail.app, dlType);
+  } else if (answer === 3) {
+    await onlyImage(novelId, novel_detail.app, dlType);
+  }
+
   await confirm({
     message: "下载完毕，是否打开目录?",
     default: true,

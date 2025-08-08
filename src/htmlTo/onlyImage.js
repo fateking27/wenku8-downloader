@@ -1,10 +1,6 @@
 import { load } from "cheerio";
-import path from "path";
-import { imageSize } from "image-size";
-import https from "https";
-import url from "url";
+import { checkbox } from "@inquirer/prompts";
 import ora from "ora";
-import { existsSync, mkdirSync } from "fs";
 import {
   getNovelChapters,
   getChapterContent,
@@ -44,7 +40,8 @@ const novel_detail = async (novelId) => {
   return novelDetail;
 };
 
-export const onlyImage = async (novel_id, isApp = false) => {
+export const onlyImage = async (novel_id, isApp = false, dlType) => {
+
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelDetail = await novel_detail(novel_id);
   const novelData = await new Promise((resolve, reject) => {
@@ -92,7 +89,23 @@ export const onlyImage = async (novel_id, isApp = false) => {
 
   const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
 
-  const chapterVolume = novelData.chapters;
+  let chapterVolume = novelData.chapters;
+
+  if (dlType === "custom") {
+    const checkValue = await checkbox({
+      message: "请选择要下载的分卷",
+      instructions: "（使用空格选择，Enter确认）",
+      choices: chapterVolume.map((item) => ({
+        name: item.chapter,
+        value: item.id,
+      })),
+      pageSize: 10,
+      loop: false,
+    });
+    chapterVolume = chapterVolume.filter((item) =>
+      checkValue.includes(item.id)
+    );
+  }
 
   if (isApp) {
     for (const item of chapterVolume) {

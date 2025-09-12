@@ -63,6 +63,7 @@ const wenku8Login = async () => {
             "https://www.wenku8.net/login.php?jumpurl=http%3A%2F%2Fwww.wenku8.net%2Findex.php",
           "User-Agent": randomHead(),
           "X-Forwarded-For": returnIp(),
+          "X-Real-IP": "127.0.0.1",
         },
       }
     )
@@ -89,6 +90,7 @@ const reqInit = (indexRes) => {
       referer: "https://www.wenku8.net/index.php",
       "User-Agent": randomHead(),
       "X-Forwarded-For": returnIp(),
+      "X-Real-IP": "127.0.0.1",
     },
   };
   let html = null;

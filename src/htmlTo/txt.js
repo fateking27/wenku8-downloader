@@ -90,7 +90,7 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
               ],
             });
         writeFileSync(
-          `${txtDirPath}/${novelName} ${chapterName}.txt`,
+          `${txtDirPath}/${chapterName}.txt`,
           `\n\n${text}\n`,
           {
             flag: "a", //追加写入

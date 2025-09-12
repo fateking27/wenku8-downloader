@@ -65,7 +65,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
   for (const item of chapterVolume) {
     if (item.children.length) {
       const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
-      if (existsSync(`${epubDirPath}/${novelName} ${chapterName}.epub`)) {
+      if (existsSync(`${epubDirPath}/${chapterName}.epub`)) {
         num++;
         continue;
       }
@@ -206,7 +206,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
           content: chapterContents,
           // verbose: true,
         },
-        epubDirPath + `/${novelName} ${chapterName}.epub`
+        epubDirPath + `/${chapterName}.epub`
       );
       await epub.render().then(() => {
         spinner.succeed(

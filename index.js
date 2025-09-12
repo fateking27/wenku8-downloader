@@ -3,7 +3,7 @@ import { options } from "./src/options/index.js";
 console.log(
   styleText(
     "green",
-    "欢迎使用wenku8轻小说文库下载器，https://github.com/fateking27/wenku8Downloader\n"
+    "欢迎使用wenku8轻小说文库下载器，https://github.com/fateking27/wenku8-downloader\n"
   )
 );
 

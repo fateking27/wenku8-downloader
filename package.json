@@ -1,5 +1,5 @@
 {
-  "name": "wenku8-download",
+  "name": "wenku8-downloader",
   "version": "1.0.0",
   "main": "index.js",
   "author": "fateking27",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fateking27/wenku8Downloader.git"
+    "url": "https://github.com/fateking27/wenku8-downloader.git"
   },
   "keywords": [
     "wenku8",
@@ -36,15 +36,5 @@
     "nodejs",
     "wenku",
     "cli"
-  ],
-  "pkg": {
-    "assets": [
-      "views/**/*",
-      "assets/**/*",
-      "novels/**/*"
-    ],
-    "targets": [
-      "node20"
-    ]
-  }
+  ]
 }

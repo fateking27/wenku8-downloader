@@ -2,9 +2,11 @@ import { EPub } from "@lesjoursfr/html-to-epub";
 import { load } from "cheerio";
 import { checkbox } from "@inquirer/prompts";
 import path from "path";
+import { axiosCreate } from "../../utils/axios.cjs";
+import { reqInit } from "../request/index.cjs";
 import { imageSize } from "image-size";
-import https from "https";
-import url from "url";
+// import https from "https";
+// import url from "url";
 import ora from "ora";
 import { existsSync, mkdirSync } from "fs";
 import {
@@ -172,33 +174,69 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
         );
         $("#title").remove();
         if (chapter.title == "插图") {
-          let coverSize = await new Promise((resolve, reject) => {
-            $("#content img:eq(0)").each((_, imgElement) => {
-              const imgUrl = $(imgElement).attr("src");
-              if (imgUrl) {
-                // 获取图片的尺寸
-                const options = url.parse(imgUrl);
-                https.get(options, function (response) {
-                  const chunks = [];
-                  response
-                    .on("data", function (chunk) {
-                      chunks.push(chunk);
-                    })
-                    .on("end", function () {
-                      const buffer = Buffer.concat(chunks);
-                      resolve(imageSize(buffer));
-                    });
-                });
-              }
-            });
+          const imgUrls = [];
+          $("#content img").each(async (_, imgElement) => {
+            const imgUrl = $(imgElement).attr("src");
+            if (imgUrl) {
+              imgUrls.push(imgUrl);
+            }
           });
 
-          if (coverSize && coverSize.width / coverSize.height < 1) {
-            // 如果图片宽高比小于1，则将其作为封面
-            epubCover = $("#content img:eq(0)").attr("src");
-          } else {
-            epubCover = $("#content img:eq(1)").attr("src");
-          }
+          // let coverSize = await new Promise((resolve, reject) => {
+          //   $("#content img:eq(0)").each((_, imgElement) => {
+          //     const imgUrl = $(imgElement).attr("src");
+          //     if (imgUrl) {
+          //       // 获取图片的尺寸
+          //       const options = url.parse(imgUrl);
+          //       https.get(options, function (response) {
+          //         const chunks = [];
+          //         response
+          //           .on("data", function (chunk) {
+          //             chunks.push(chunk);
+          //           })
+          //           .on("end", function () {
+          //             const buffer = Buffer.concat(chunks);
+          //             resolve(imageSize(buffer));
+          //           });
+          //       });
+          //     }
+          //   });
+          // });
+
+          const getEpubCover = async () => {
+            for (const imgUrl of imgUrls) {
+              const coverSize = await new Promise(async (resolve, reject) => {
+                const res = await axiosCreate
+                  .get(imgUrl, {
+                    ...reqInit().config,
+                  })
+                  .catch((error) => {
+                    console.log(`获取图片 ${imgUrl} 大小失败：`, error);
+                  });
+                if (res) {
+                  resolve(imageSize(res.data));
+                } else {
+                  resolve(false);
+                }
+              });
+              if (coverSize && coverSize.width / coverSize.height < 1) {
+                epubCover = imgUrl;
+                break;
+              } else if (!coverSize) {
+                getEpubCover();
+                break;
+              }
+            }
+          };
+          await getEpubCover();
+
+          // if (coverSize && coverSize.width / coverSize.height < 1) {
+          //   // 如果图片宽高比小于1，则将其作为封面
+          //   epubCover = $("#content img:eq(0)").attr("src");
+          // } else {
+          //   epubCover = $("#content img:eq(1)").attr("src");
+          // }
+
           const contentMain = $("#content");
           const imgList = contentMain
             .find("img")

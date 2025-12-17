@@ -11,12 +11,29 @@ const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
 const htmlToTxt = async (novel_id, isApp, dlType) => {
-
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
 
-  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
+  // const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
+  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, (match) => {
+    switch (match) {
+      case "/":
+        return "";
+      case ":":
+        return "：";
+      case "*":
+        return "_";
+      case "?":
+        return "？";
+      case "<":
+        return "_";
+      case ">":
+        return "_";
+      case "|":
+        return "_";
+    }
+  });
 
   //递归创建多级目录
   const mkdirsSync = async (dirname) => {
@@ -58,7 +75,26 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
   for (const item of chapterVolume) {
     if (item.children.length) {
       //将名称中的特殊字符替换
-      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "：");
+      // const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "：");
+      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
+        switch (match) {
+          case "/":
+            return "";
+          case ":":
+            return "：";
+          case "*":
+            return "_";
+          case "?":
+            return "？";
+          case "<":
+            return "_";
+          case ">":
+            return "_";
+          case "|":
+            return "_";
+        }
+      });
+      
       for (const chapter of item.children) {
         if (chapter.title == "插图") {
           continue;
@@ -89,14 +125,10 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
                 },
               ],
             });
-        writeFileSync(
-          `${txtDirPath}/${chapterName}.txt`,
-          `\n\n${text}\n`,
-          {
-            flag: "a", //追加写入
-            encoding: "utf-8",
-          }
-        );
+        writeFileSync(`${txtDirPath}/${chapterName}.txt`, `\n\n${text}\n`, {
+          flag: "a", //追加写入
+          encoding: "utf-8",
+        });
         spinner.succeed(
           "下载完成：" +
             styleText(["magenta"], `${item.chapter}、${chapter.title}`)

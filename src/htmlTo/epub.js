@@ -23,7 +23,25 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
 
-  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
+  // const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "：");
+  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, (match) => {
+    switch (match) {
+      case "/":
+        return "";
+      case ":":
+        return "：";
+      case "*":
+        return "_";
+      case "?":
+        return "？";
+      case "<":
+        return "_";
+      case ">":
+        return "_";
+      case "|":
+        return "_";
+    }
+  });
 
   //递归创建多级目录
   const mkdirsSync = async (dirname) => {
@@ -64,7 +82,27 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
   let num = 1;
   for (const item of chapterVolume) {
     if (item.children.length) {
-      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
+      // const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
+      //将名称中的特殊字符替换为对应的中文字符
+      const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
+        switch (match) {
+          case "/":
+            return "";
+          case ":":
+            return "：";
+          case "*":
+            return "_";
+          case "?":
+            return "？";
+          case "<":
+            return "_";
+          case ">":
+            return "_";
+          case "|":
+            return "_";
+        }
+      });
+
       if (existsSync(`${epubDirPath}/${chapterName}.epub`)) {
         num++;
         continue;

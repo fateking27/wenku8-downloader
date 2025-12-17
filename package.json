@@ -36,5 +36,15 @@
     "nodejs",
     "wenku",
     "cli"
-  ]
+  ],
+  "pkg": {
+    "assets": [
+      "views/**/*",
+      "assets/**/*",
+      "novels/**/*"
+    ],
+    "targets": [
+      "node20"
+    ]
+  }
 }

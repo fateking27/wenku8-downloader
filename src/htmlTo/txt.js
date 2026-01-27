@@ -96,14 +96,26 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
       });
       
       for (const chapter of item.children) {
-        if (chapter.title == "插图") {
+        if (chapter.title === "插图") {
           continue;
         }
         spinner.start(
           "开始下载：" +
             styleText(["magenta"], `${item.chapter}、${chapter.title}`)
         );
-        const html = isApp ? "" : await getChapterContent(novel_id, chapter.id);
+        // const html = isApp ? "" : await getChapterContent(novel_id, chapter.id);
+        let html = ""
+        if (isApp) {
+          html = ""
+        } else {
+          spinner.stop()
+          await getChapterContent(novel_id, chapter.id, {
+            chapterName: item.chapter,
+            contentTitle: chapter.title
+          }).then(res => {
+            html = res
+          })
+        }
         if (!html && !isApp) {
           spinner.fail(
             styleText(["red"], `章节内容不存在: ${chapter.id}.${chapter.title}`)

@@ -116,7 +116,7 @@ const getChapterContent = async (novelId, chapterId, chapterTitle) => {
         });
 
     if (!indexRes && statusCode === 404) {
-        if (getContentCount >= 1) {
+        if (getContentCount >= 3) {
             console.log(styleText(["yellowBright"], `⚠ 未获取到章节内容：`) +
                 styleText('magenta', `${chapterTitle.chapterName}、${chapterTitle.contentTitle}`))
             let isTry = false
@@ -171,7 +171,7 @@ const downloadNovelImages = async (url, obj) => {
             ...reqInit().config,
         })
         .catch((error) => {
-            if (error.status == 404) {
+            if (error.status === 404) {
                 statusCode = 404;
             }
         });

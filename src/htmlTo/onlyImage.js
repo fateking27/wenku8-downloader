@@ -87,7 +87,24 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
   });
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
 
-  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, "？");
+  const novelName = novelData.title.replace(/[\/:*?"<>|]/g, (match) => {
+    switch (match) {
+      case "/":
+        return "";
+      case ":":
+        return "：";
+      case "*":
+        return "_";
+      case "?":
+        return "？";
+      case "<":
+        return "_";
+      case ">":
+        return "_";
+      case "|":
+        return "_";
+    }
+  });
 
   let chapterVolume = novelData.chapters;
 
@@ -110,9 +127,26 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
   if (isApp) {
     for (const item of chapterVolume) {
       if (item.children.length) {
-        const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "："); //将名称中的特殊字符替换
+        const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
+          switch (match) {
+            case "/":
+              return "";
+            case ":":
+              return "：";
+            case "*":
+              return "_";
+            case "?":
+              return "？";
+            case "<":
+              return "_";
+            case ">":
+              return "_";
+            case "|":
+              return "_";
+          }
+        }); //将名称中的特殊字符替换
         for (const chapter of item.children) {
-          if (chapter.title == "插图") {
+          if (chapter.title === "插图") {
             const res = await getBookText({
               novel_id,
               chapter_id: chapter.id,
@@ -137,9 +171,26 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
   } else {
     for (const item of chapterVolume) {
       if (item.children.length) {
-        const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "？"); //将名称中的特殊字符替换
+        const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
+          switch (match) {
+            case "/":
+              return "";
+            case ":":
+              return "：";
+            case "*":
+              return "_";
+            case "?":
+              return "？";
+            case "<":
+              return "_";
+            case ">":
+              return "_";
+            case "|":
+              return "_";
+          }
+        }); //将名称中的特殊字符替换
         for (const chapter of item.children) {
-          if (chapter.title == "插图") {
+          if (chapter.title === "插图") {
             let chapterContent = await getChapterContent(novel_id, chapter.id);
             const $ = load(chapterContent);
             const contentMain = $("#content");

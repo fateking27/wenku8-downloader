@@ -125,7 +125,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
               </div>
             </div>` : null;
 
-                if (chapter.title == "插图" && chapterText) {
+                if (chapter.title === "插图" && chapterText) {
                     let contentHtml = chapterText.replace(/<!--image-->(.*?)<!--image-->/g, (match, p1) => {
                         return `<div class="divimage">
                 <a href="${p1}" target="_blank">

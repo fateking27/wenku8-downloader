@@ -2,7 +2,7 @@ import { confirm, input, rawlist } from "@inquirer/prompts";
 import { styleText } from "util";
 import ora from "ora";
 
-import { getNovelDetail } from "../../../getNovelDetal.js";
+import { getNovelDetail } from "../../../getNovelDetails.js";
 import { search } from "../../../search.js";
 
 import { novel_dl_select } from "../../novel_dl_select.js";

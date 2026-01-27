@@ -4,7 +4,7 @@ import { reqInit } from "./request/index.cjs";
 import ora from "ora";
 import Table from "cli-table3";
 import { styleText } from "util";
-import { getBookMeta, getBookIntro } from "../src/api/index.js";
+import { getBookMeta, getBookIntro } from "./api/index.js";
 import { xmlToJson } from "../utils/xmlToJson.js";
 
 const spinner = ora();

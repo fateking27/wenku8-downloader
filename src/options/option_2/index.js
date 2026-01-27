@@ -10,7 +10,7 @@ import { styleText } from "util";
 import Table from "cli-table3";
 
 import { getHotNovelList } from "../../getHotNovelList.js";
-import { getNovelDetail } from "../../getNovelDetal.js";
+import { getNovelDetail } from "../../getNovelDetails.js";
 import { novel_dl_select } from "../novel_dl_select.js";
 
 export const option_2 = async () => {

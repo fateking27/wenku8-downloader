@@ -69,11 +69,12 @@ const wenku8Login = async () => {
     )
     .catch(() => {});
   if (!loginRes) return;
+  // console.log(loginRes,"wenku8--登录成功");
   const cookies = loginRes.headers["set-cookie"].map((cookieItem) => {
     cookieItem = cookieItem.split(";")[0];
     return cookieItem;
   });
-  wenku8Cookie.cookie = cookies[1];
+  wenku8Cookie.cookie = cookies.slice(1).join(";");
   fs.writeFileSync(
     path.resolve(__dirname, "../../utils/wenku8.json"),
     JSON.stringify(wenku8Cookie),

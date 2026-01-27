@@ -1,5 +1,5 @@
-import { confirm,  number } from "@inquirer/prompts";
-import { getNovelDetail } from "../../../getNovelDetal.js";
+import { confirm, number } from "@inquirer/prompts";
+import { getNovelDetail } from "../../../getNovelDetails.js";
 import { novel_dl_select } from "../../novel_dl_select.js";
 
 export const option_1_1 = async () => {

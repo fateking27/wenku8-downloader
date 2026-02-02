@@ -27,7 +27,7 @@ const start = async () => {
   console.log(`当前延迟: ${delay}ms \n`);
 
   await options();
-  await start(); // 重新开始操作
+  return start(); // 重新开始操作
 };
 
 // 启动程序

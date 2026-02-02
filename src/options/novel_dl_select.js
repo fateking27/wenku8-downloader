@@ -6,6 +6,13 @@ import { exec } from "child_process";
 import path from "path";
 
 export const novel_dl_select = async (novelId, novel_detail) => {
+  if (!novel_detail) {
+    console.log(
+      styleText(["yellowBright"], `⚠ 未获取到小说详情：`) +
+        styleText("magenta", `${novelId}`),
+    );
+    return;
+  }
   const answer = await select({
     message: "请选择下载格式",
     default: 1,
@@ -72,8 +79,8 @@ export const novel_dl_select = async (novelId, novel_detail) => {
           import.meta.dirname,
           `../..${answer !== 3 ? "/novels" : ""}/${
             answer === 1 ? "epub" : answer === 2 ? "txt" : "插图"
-          }/${novel_detail.name.replace(/[\/:*?"<>|]/g, "：")}`
-        )}"`
+          }/${novel_detail.name.replace(/[\/:*?"<>|]/g, "：")}`,
+        )}"`,
       );
     }
   });

@@ -8,6 +8,7 @@ import { getBookMeta, getBookIntro } from "./api/index.js";
 import { xmlToJson } from "../utils/xmlToJson.js";
 
 const spinner = ora();
+let getNovelDetailCount = 0;
 
 //获取小说详情
 export const getNovelDetail = async (novelId) => {
@@ -23,10 +24,30 @@ export const getNovelDetail = async (novelId) => {
       }
     });
   if (!indexRes && statusCode === 404) {
-    spinner.fail(
-      styleText("yellowBright", "小说不存在或获取失败，请检查ID或名称是否正确")
-    );
-    return false;
+    if (getNovelDetailCount >= 3) {
+      console.log(
+        styleText(["yellowBright"], `⚠ 未获取到小说详情：`) +
+          styleText(
+            "magenta",
+            `${novelId}`,
+          ),
+      );
+      let isTry = false;
+      await confirm({
+        message: `已重试${getNovelDetailCount}次，是否继续？`,
+        default: true,
+        transformer: (value) => (value ? "YES" : "NO"),
+      }).then((res) => {
+        isTry = res;
+      });
+      if (!isTry) {
+        getNovelDetailCount = 0;
+        return false;
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    getNovelDetailCount += 1;
+    return await getNovelDetail(novelId);
   } else if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 10000)); // 等待10秒后重试
     return await getNovelDetail(novelId);
@@ -79,7 +100,7 @@ export const getNovelDetail = async (novelId) => {
 
   if (!novel_detail.name) {
     spinner.fail(
-      styleText("yellowBright", "小说不存在或获取失败，请检查ID或名称是否正确")
+      styleText("yellowBright", "小说不存在或获取失败，请检查ID或名称是否正确"),
     );
     return false;
   }
@@ -139,6 +160,8 @@ export const getNovelDetail = async (novelId) => {
     novel_detail.latest_chapter,
   ]);
   console.log(table.toString());
+
+  getNovelDetailCount = 0;
 
   return novel_detail;
 };

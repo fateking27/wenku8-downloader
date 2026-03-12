@@ -1,4 +1,4 @@
-import { select, checkbox, confirm, input, number } from "@inquirer/prompts";
+import { select, confirm } from "@inquirer/prompts";
 import { htmlToEpub } from "../htmlTo/epub.js";
 import { htmlToTxt } from "../htmlTo/txt.js";
 import { onlyImage } from "../htmlTo/onlyImage.js";

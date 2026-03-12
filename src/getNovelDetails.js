@@ -4,8 +4,8 @@ import { reqInit } from "./request/index.cjs";
 import ora from "ora";
 import Table from "cli-table3";
 import { styleText } from "util";
-import { getBookMeta } from "./api/index.js";
-import { xmlToJson } from "../utils/xmlToJson.js";
+// import { getBookMeta } from "./api/index.js";
+// import { xmlToJson } from "../utils/xmlToJson.js";
 
 const spinner = ora();
 let getNovelDetailCount = 0;

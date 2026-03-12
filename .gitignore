@@ -2,5 +2,6 @@
 /node_modules
 /novels
 /插图
+/dist
 
 /logs/*

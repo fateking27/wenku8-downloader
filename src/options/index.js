@@ -7,19 +7,19 @@ import { option_4 } from "./option_4/index.js";
 
 export const options = async () => {
   const answer = await select({
-    message: "你打算做什么?\n",
+    message: "你打算做什么?",
     default: 1,
     choices: [
       {
-        name: "查询小说\n",
+        name: "查询小说",
         value: 1,
       },
       {
-        name: "今日热榜\n",
+        name: "今日热榜",
         value: 2,
       },
       {
-        name: "新书风云榜\n",
+        name: "新书风云榜",
         value: 3,
       },
       {

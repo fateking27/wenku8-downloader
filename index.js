@@ -1,7 +1,5 @@
 import { styleText } from "util";
 import { options } from "./src/options/index.js";
-import axios from "axios";
-import fs from "fs";
 
 console.log(
   styleText(

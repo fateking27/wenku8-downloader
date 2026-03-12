@@ -8,9 +8,11 @@
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github)](https://github.com/fateking27/wenku8-downloader)
 ![GitHub License](https://img.shields.io/github/license/fateking27/wenku8-downloader)
 ![GitHub all releases](https://img.shields.io/github/downloads/fateking27/wenku8-downloader/total?color=blue&label=github%20downloads)
-[![GitHub all releases](https://img.shields.io/github/v/release/fateking27/wenku8-downloader?color=blue&label=download&sort=semver)](https://github.com/wushuo894/ani-rss/releases/latest)
+[![GitHub releases](https://img.shields.io/github/v/release/fateking27/wenku8-downloader?color=blue&label=download&sort=semver)](https://github.com/fateking27/wenku8-downloader/releases/latest)
 
 </div>
+
+![](assets/snipaste-20250701-171814.jpg)
 
 ### 介绍
 
@@ -30,8 +32,6 @@
 ### 其他
 
 ⚠请注意：由于wenku8站点开启cloudflare防火墙以及图片站点网络不稳定的缘故，在获取插画和小说内容时可能会出现失败和较长等待时间的情况
-
-![](assets/snipaste-20250701-171814.jpg)
 
 ![](assets/snipaste-20250701-172704.jpg)
 

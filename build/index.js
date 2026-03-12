@@ -79,12 +79,13 @@ const config = {
       publisher: "fateking27",
       copyright: "Copyright (c) 2026 fateking27. All rights reserved.",
       description: "wenku8-downloader built with Bun.",
+      icon: "./assets/wenku8.ico"
     },
   },
   minify: true,
   sourcemap: "linked",
   bytecode: true,
-  plugins: [Plugin],
+  plugins: [Plugin]
 };
 
 const result = await Bun.build(config);

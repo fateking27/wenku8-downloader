@@ -1,6 +1,7 @@
+import dayjs from "dayjs";
 import { axios } from "../../utils/axiosToApp.cjs";
 
-const baseURL = "http://app.wenku8.com";
+const baseURL = "https://wenku8-relay.mewx.org";
 
 const toBase64String = (str) => {
   return Buffer.from(str).toString("base64");
@@ -8,21 +9,10 @@ const toBase64String = (str) => {
 
 // 获取小说详情
 export const getBookMeta = async (data) => {
-  return await axios.post(`${baseURL}/android.php`, {
-    appver: "1.21",
-    request: toBase64String(
-      `action=book&do=meta&aid=${data.novel_id}&t=0`
-    ),
-  });
-};
-
-// 获取小说简介
-export const getBookIntro = async (data) => {
-  return await axios.post(`${baseURL}/android.php`, {
-    appver: "1.21",
-    request: toBase64String(
-      `action=book&do=intro&aid=${data.novel_id}&t=0`
-    ),
+  return await axios.post(`${baseURL}`, {
+    appver: "1.28",
+    timetoken: dayjs().unix(),
+    request: toBase64String(`action=book&do=meta&aid=${data.novel_id}&t=0`)
   });
 };
 
@@ -33,20 +23,18 @@ export const getBookIntro = async (data) => {
  * @returns
  */
 export const getBookList = async (data) => {
-  return await axios.post(`${baseURL}/android.php`, {
-    appver: "1.21",
-    request: toBase64String(
-      `action=book&do=list&aid=${data.novel_id}&t=0`
-    ),
+  return await axios.post(`${baseURL}`, {
+    appver: "1.25-chibi-chapter-17d5f684",
+    request: toBase64String(`action=book&do=list&aid=${data.novel_id}&t=0`),
   });
 };
 
 // 获取小说章节内容
 export const getBookText = async (data) => {
-  return await axios.post(`${baseURL}/android.php`, {
-    appver: "1.21",
+  return await axios.post(`${baseURL}`, {
+    appver: "1.25-chibi-chapter-17d5f684",
     request: toBase64String(
-      `action=book&do=text&aid=${data.novel_id}&cid=${data.chapter_id}&t=0`
+      `action=book&do=text&aid=${data.novel_id}&cid=${data.chapter_id}&t=0`,
     ),
   });
 };

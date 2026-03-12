@@ -90,19 +90,19 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
   const novelName = novelData.title.replace(/[\/:*?"<>|]/g, (match) => {
     switch (match) {
       case "/":
-        return "";
+        return "／";
       case ":":
         return "：";
       case "*":
-        return "_";
+        return "﹡";
       case "?":
         return "？";
       case "<":
-        return "_";
+        return "＜";
       case ">":
-        return "_";
+        return "＞";
       case "|":
-        return "_";
+        return "｜";
     }
   });
 
@@ -129,20 +129,20 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
       if (item.children.length) {
         const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
           switch (match) {
-            case "/":
-              return "";
-            case ":":
-              return "：";
-            case "*":
-              return "_";
-            case "?":
-              return "？";
-            case "<":
-              return "_";
-            case ">":
-              return "_";
-            case "|":
-              return "_";
+      case "/":
+        return "／";
+      case ":":
+        return "：";
+      case "*":
+        return "﹡";
+      case "?":
+        return "？";
+      case "<":
+        return "＜";
+      case ">":
+        return "＞";
+      case "|":
+        return "｜";
           }
         }); //将名称中的特殊字符替换
         for (const chapter of item.children) {
@@ -173,20 +173,20 @@ export const onlyImage = async (novel_id, isApp = false, dlType) => {
       if (item.children.length) {
         const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, (match) => {
           switch (match) {
-            case "/":
-              return "";
-            case ":":
-              return "：";
-            case "*":
-              return "_";
-            case "?":
-              return "？";
-            case "<":
-              return "_";
-            case ">":
-              return "_";
-            case "|":
-              return "_";
+      case "/":
+        return "／";
+      case ":":
+        return "：";
+      case "*":
+        return "﹡";
+      case "?":
+        return "？";
+      case "<":
+        return "＜";
+      case ">":
+        return "＞";
+      case "|":
+        return "｜";
           }
         }); //将名称中的特殊字符替换
         for (const chapter of item.children) {

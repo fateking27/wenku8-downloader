@@ -1,6 +1,6 @@
 import { EPub } from "@lesjoursfr/html-to-epub";
 import { load } from "cheerio";
-import { checkbox } from "@inquirer/prompts";
+import { checkbox, select } from "@inquirer/prompts";
 import path from "path";
 import { axiosCreate } from "../../utils/axios.cjs";
 import { reqInit } from "../request/index.cjs";
@@ -8,7 +8,7 @@ import { imageSize } from "image-size";
 // import https from "https";
 // import url from "url";
 import ora from "ora";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import {
   getNovelChapters,
   getChapterContent,
@@ -17,7 +17,7 @@ import {
 import { getBookText } from "../api/index.js";
 import { styleText } from "util";
 
-const __dirname = import.meta.dirname; // 获取当前文件路径
+// const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 let retries = 3; //重试次数
 
@@ -65,8 +65,8 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
   };
 
   const epubDirPath = path.join(
-    __dirname,
-    `../../novels/epub/${novelName}`, // 使用小说名称作为目录名
+    process.cwd(),
+    `/novels/epub/${novelName}`, // 使用小说名称作为目录名
   );
 
   await mkdirsSync(epubDirPath); // 如果目录不存在，则创建目录
@@ -87,6 +87,18 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
       checkValue.includes(item.id),
     );
   }
+
+  // const isSaveImage = await select({
+  //   message: "是否要将插图保留到本地",
+  //   choices: [
+  //     { name: "是", value: true, description: "插图保留到本地" },
+  //     {
+  //       name: "否",
+  //       value: false,
+  //       description: "直接生成epub文件，插图不保留到本地",
+  //     },
+  //   ],
+  // });
 
   let num = 1;
   for (const item of chapterVolume) {
@@ -163,7 +175,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
         if (isApp) {
           chapterContent = chapterTextToHtml;
         } else {
-          spinner.stop();
+          // spinner.stop();
           await getChapterContent(novel_id, chapter.id, {
             chapterName: item.chapter,
             contentTitle: chapter.title,
@@ -181,75 +193,15 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
           continue;
         }
         const $ = load(chapterContent);
+
         spinner.succeed(
           "下载完成：" +
             styleText(["magenta"], `${item.chapter}、${chapter.title}`),
         );
+
         $("#title").remove();
+
         if (chapter.title === "插图") {
-          const imgUrls = [];
-          $("#content img").each(async (_, imgElement) => {
-            const imgUrl = $(imgElement).attr("src");
-            if (imgUrl) {
-              imgUrls.push(imgUrl);
-            }
-          });
-
-          // let coverSize = await new Promise((resolve, reject) => {
-          //   $("#content img:eq(0)").each((_, imgElement) => {
-          //     const imgUrl = $(imgElement).attr("src");
-          //     if (imgUrl) {
-          //       // 获取图片的尺寸
-          //       const options = url.parse(imgUrl);
-          //       https.get(options, function (response) {
-          //         const chunks = [];
-          //         response
-          //           .on("data", function (chunk) {
-          //             chunks.push(chunk);
-          //           })
-          //           .on("end", function () {
-          //             const buffer = Buffer.concat(chunks);
-          //             resolve(imageSize(buffer));
-          //           });
-          //       });
-          //     }
-          //   });
-          // });
-
-          const getEpubCover = async () => {
-            for (const imgUrl of imgUrls) {
-              const coverSize = await new Promise(async (resolve, reject) => {
-                const res = await axiosCreate
-                  .get(imgUrl, {
-                    ...reqInit().config,
-                  })
-                  .catch((error) => {
-                    console.log(`获取图片 ${imgUrl} 大小失败：`, error);
-                  });
-                if (res) {
-                  resolve(imageSize(res.data));
-                } else {
-                  resolve(false);
-                }
-              });
-              if (coverSize && coverSize.width / coverSize.height < 1) {
-                epubCover = imgUrl;
-                break;
-              } else if (!coverSize) {
-                getEpubCover();
-                break;
-              }
-            }
-          };
-          await getEpubCover();
-
-          // if (coverSize && coverSize.width / coverSize.height < 1) {
-          //   // 如果图片宽高比小于1，则将其作为封面
-          //   epubCover = $("#content img:eq(0)").attr("src");
-          // } else {
-          //   epubCover = $("#content img:eq(1)").attr("src");
-          // }
-
           const contentMain = $("#content");
           const imgList = contentMain
             .find("img")
@@ -262,15 +214,31 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
             ),
           );
 
+          const imgUrls = [];
+
           // 替换为本地图片地址
           contentMain.find("img").each((_, imgElement) => {
             const imgUrl = $(imgElement).attr("src");
             if (imgUrl) {
               const fileName = imgUrl.split("/").pop();
-              const newImgUrl = `file://${path.join(__dirname, `../../插图/${novelName}/${chapterName}/${fileName}`)}`;
+              const newImgUrl = `file://${path.join(process.cwd(), `/插图/${novelName}/${chapterName}/${fileName}`)}`;
               $(imgElement).attr("src", newImgUrl);
+              imgUrls.push(
+                `${path.join(process.cwd(), `/插图/${novelName}/${chapterName}/${fileName}`)}`,
+              );
             }
           });
+
+          for (const imgUrl of imgUrls) {
+            const coverSize = await new Promise(async (resolve, reject) => {
+              const imageBuffer = readFileSync(imgUrl);
+              resolve(imageSize(imageBuffer));
+            });
+            if (coverSize && coverSize.width / coverSize.height < 1) {
+              epubCover = imgUrl;
+              break;
+            }
+          }
         }
 
         chapterContents.push({
@@ -278,17 +246,19 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
           data: $("html").html(),
         });
       }
+
       const epub = new EPub(
         {
           title: `${chapterName}`,
           author: novelData.author.split("：")[1],
           cover: epubCover
             ? epubCover
-            : `${path.join(__dirname, "../../assets/nocover.jpg")}`, // useFirstImageAsCover: true,
+            : `${path.join(process.cwd(), "/assets/nocover.jpg")}`, // useFirstImageAsCover: true,
           // publisher: "",
           tocTitle: "目录",
           lang: "zh-CN",
-          content: chapterContents, // verbose: true,
+          content: chapterContents,
+          verbose: true,
         },
         epubDirPath + `/${chapterName}.epub`,
       );
@@ -304,6 +274,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
       });
     }
   }
+  
   spinner.succeed(
     styleText(
       ["greenBright"],

@@ -1,4 +1,4 @@
-import { select, checkbox, confirm, input, number } from "@inquirer/prompts";
+import { select, confirm } from "@inquirer/prompts";
 import { htmlToEpub } from "../htmlTo/epub.js";
 import { htmlToTxt } from "../htmlTo/txt.js";
 import { onlyImage } from "../htmlTo/onlyImage.js";
@@ -17,42 +17,31 @@ export const novel_dl_select = async (novelId, novel_detail) => {
 
   const answer = await select({
     message: "请选择下载格式",
-    default: 1,
-    choices: novel_detail.app
-      ? [
-          {
-            name: "TXT",
-            value: "only-txt",
-            description: "TXT格式",
-          },
-          {
-            name: "取消",
-            value: 4,
-            description: "取消下载",
-          },
-        ]
-      : [
-          {
-            name: "Epub",
-            value: 1,
-            description: "Epub格式",
-          },
-          {
-            name: "TXT",
-            value: 2,
-            description: "TXT格式",
-          },
-          {
-            name: "插图",
-            value: 3,
-            description: "仅下载插图",
-          },
-          {
-            name: "取消",
-            value: 4,
-            description: "取消下载",
-          },
-        ],
+    default: "",
+    choices: [
+      {
+        name: "Epub",
+        value: 1,
+        description: "Epub格式",
+        disabled: novel_detail.app ? "(该小说暂不支持下载Epub格式)" : false,
+      },
+      {
+        name: "TXT",
+        value: novel_detail.app ? "only-txt" : 2,
+        description: "TXT格式",
+      },
+      {
+        name: "插图",
+        value: 3,
+        description: "仅下载插图",
+        disabled: novel_detail.app ? "(该小说暂不支持下载插图)" : false,
+      },
+      {
+        name: "取消",
+        value: 4,
+        description: "取消下载",
+      },
+    ],
   });
 
   if (answer === 4) {

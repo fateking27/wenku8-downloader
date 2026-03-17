@@ -29,7 +29,7 @@
 
 ### 方式一
 
-[下载](https://github.com/fateking27/wenku8-downloader/releases/download/wenku8-downloader/wenku8-downloader.zip) 解压后直接双击打开 `wenku8-downloader.exe` 即可使用
+[下载](https://github.com/fateking27/wenku8-downloader/releases/download/v0.1.0/v0.1.0.zip) 解压后直接双击打开 `wenku8-downloader.exe` 即可使用
 
 ### 方式二
 

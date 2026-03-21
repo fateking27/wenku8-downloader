@@ -27,6 +27,12 @@
 
 ## 使用
 
+### 方式一
+
+[下载](https://github.com/fateking27/wenku8-downloader/releases/download/v0.1.0/v0.1.0.zip) 解压后直接双击打开 `wenku8-downloader.exe` 即可使用
+
+### 方式二
+
 本工具基于NodeJS实现，请确保已安装了 [Node环境](https://nodejs.org/en/)
 
 ``` shell
@@ -36,7 +42,6 @@ npm install -g yarn
 ```
 
 执行完以上命令后直接双击`start.bat`文件即可运行，也可以在命令行中运行`yarn && yarn start`
-
 
 ### 其他
 

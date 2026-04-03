@@ -1,34 +1,30 @@
 import { styleText } from "util";
 import {
-  readdirSync,
-  statSync,
-  mkdirSync,
-  rmSync,
-  copyFileSync,
   existsSync,
   writeFileSync,
 } from "fs";
 import path from "path";
+import { copyDirectory } from "./copyDirectory.js";
 
-function copyDirectory(src, dest) {
-  if (!statSync(src).isDirectory()) return;
+// function copyDirectory(src, dest) {
+//   if (!statSync(src).isDirectory()) return;
 
-  if (!statSync(dest, { throwIfNoEntry: false })) {
-    mkdirSync(dest, { recursive: true });
-  }
+//   if (!statSync(dest, { throwIfNoEntry: false })) {
+//     mkdirSync(dest, { recursive: true });
+//   }
 
-  const files = readdirSync(src);
-  for (const file of files) {
-    const srcPath = `${src}/${file}`;
-    const destPath = `${dest}/${file}`;
+//   const files = readdirSync(src);
+//   for (const file of files) {
+//     const srcPath = `${src}/${file}`;
+//     const destPath = `${dest}/${file}`;
 
-    if (statSync(srcPath).isDirectory()) {
-      copyDirectory(srcPath, destPath);
-    } else {
-      copyFileSync(srcPath, destPath);
-    }
-  }
-}
+//     if (statSync(srcPath).isDirectory()) {
+//       copyDirectory(srcPath, destPath);
+//     } else {
+//       copyFileSync(srcPath, destPath);
+//     }
+//   }
+// }
 
 const Plugin = {
   name: "plugin",
@@ -46,26 +42,23 @@ const Plugin = {
         );
       }
 
-      // 拷贝 assets 文件夹到打包目录
-      const assetsDir = "./assets";
       const outputDir = "./dist";
+      // 源目录和目标目录的映射关系
+      const dirList = [
+        {
+          src_dir: "./node_modules/@lesjoursfr",
+          dest_dir: [`${outputDir}/@lesjoursfr`],
+        },
+        { src_dir: "./assets", dest_dir: [`${outputDir}/assets`] },
+      ];
 
-      try {
-        if (statSync(assetsDir, { throwIfNoEntry: false })) {
-          const destAssetsDir = `${outputDir}/assets`;
-
-          // 清空目标目录
-          if (statSync(destAssetsDir, { throwIfNoEntry: false })) {
-            rmSync(destAssetsDir, { recursive: true, force: true });
-          }
-
-          mkdirSync(destAssetsDir, { recursive: true });
-          copyDirectory(assetsDir, destAssetsDir);
-          // console.log(styleText(["greenBright"], `${destAssetsDir}`));
-        }
-      } catch (error) {
-        // console.log(styleText(["red"], `拷贝 assets 文件夹时出错: ${error.message}`));
-      }
+      dirList.forEach((dir) => {
+        dir.dest_dir.forEach((dest) => {
+          console.log(`正在复制目录：${dir.src_dir} 到 ${dest}`);
+          copyDirectory(dir.src_dir, dest);
+          console.log(`目录复制完成：${dir.src_dir} 到 ${dest}`);
+        });
+      });
     });
   },
 };
@@ -79,13 +72,13 @@ const config = {
       publisher: "fateking27",
       copyright: "Copyright (c) 2026 fateking27. All rights reserved.",
       description: "wenku8-downloader built with Bun.",
-      icon: "./assets/wenku8.ico"
+      icon: "./assets/wenku8.ico",
     },
   },
   minify: true,
   sourcemap: "linked",
-  bytecode: true,
-  plugins: [Plugin]
+  // bytecode: true,
+  plugins: [Plugin],
 };
 
 const result = await Bun.build(config);

@@ -8,7 +8,7 @@
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github)](https://github.com/fateking27/wenku8-downloader)
 ![GitHub License](https://img.shields.io/github/license/fateking27/wenku8-downloader)
 ![GitHub all releases](https://img.shields.io/github/downloads/fateking27/wenku8-downloader/total?color=blue&label=github%20downloads)
-[![GitHub releases](https://img.shields.io/badge/-download-blue?style=flat&label=download)](https://github.com/fateking27/wenku8-downloader/releases/latest)
+[![GitHub releases](https://img.shields.io/github/v/release/fateking27/wenku8-downloader?color=blue&label=download&sort=semver)](https://github.com/fateking27/wenku8-downloader/releases/latest)
 
 </div>
 

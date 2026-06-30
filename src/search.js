@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import { axiosCreate } from "../utils/axios.cjs";
-import { reqInit, wenku8Login } from "./request/index.cjs";
+import { axiosCreate } from "../utils/axios.js";
+import { reqInit, wenku8Login } from "./request/index.js";
 import ora from "ora";
 import { styleText } from "util";
 import iconv from "iconv-lite";
@@ -22,16 +22,21 @@ export const search = async (keyword, searchtype) => {
     });
   if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
-    await wenku8Login();
+    // await wenku8Login();
     return await search(keyword, searchtype);
   }
-  const cookies = indexRes.headers["set-cookie"];
-  if (!cookies) {
-    await wenku8Login();
-    return await search(keyword, searchtype);
-  }
+  // const cookies = indexRes.headers["set-cookie"];
+  // if (!cookies) {
+  //   await wenku8Login();
+  //   return await search(keyword, searchtype);
+  // }
   const $ = cheerio.load(reqInit(indexRes).html);
   let novelList = [];
+  const mark = $("#content").find(".grid>caption").text()?.trim() || null;
+  if (mark == "用户登录") {
+    await wenku8Login();
+    return await search(keyword, searchtype);
+  }
 
   if ($("#centerm>#content>.grid>caption").length === 0) {
     let novel_detail = {};

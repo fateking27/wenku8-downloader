@@ -1,8 +1,7 @@
-const { axiosCreate } = require("../../utils/axios.cjs");
-// const wenku8Cookie = require("../../wenku8.json");
-const iconv = require("iconv-lite");
-const fs = require("fs");
-const path = require("path");
+import { axiosCreate } from "../../utils/axios.js";
+import iconv from "iconv-lite";
+import fs from "fs";
+import path from "path";
 
 const wenku8Cookie = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), "/wenku8.json"), {
@@ -50,7 +49,10 @@ const returnIp = () => {
   );
 };
 
-const wenku8Login = async () => {
+/**
+ * 登录wenku8
+ */
+export const wenku8Login = async () => {
   const formData = new FormData();
   formData.append("username", "fk233");
   formData.append("password", "test233");
@@ -82,12 +84,17 @@ const wenku8Login = async () => {
   wenku8Cookie.cookie = cookies.slice(1).join(";");
   fs.writeFileSync(
     path.join(process.cwd(), "/wenku8.json"),
-    JSON.stringify(wenku8Cookie),
+    JSON.stringify(wenku8Cookie, null, 2),
     { encoding: "utf-8" },
   );
 };
 
-const reqInit = (indexRes) => {
+/**
+ * 初始化请求配置
+ * @param {axiosResponse} indexRes - 页面响应
+ * @returns {Object} - 包含配置和HTML的对象
+ */
+export const reqInit = (indexRes) => {
   const config = {
     withCredentials: true,
     responseType: "arraybuffer",
@@ -109,7 +116,3 @@ const reqInit = (indexRes) => {
   };
 };
 
-module.exports = {
-  wenku8Login,
-  reqInit,
-};

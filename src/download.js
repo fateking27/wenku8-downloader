@@ -1,5 +1,5 @@
-import { reqInit } from "./request/index.cjs";
-import { axiosCreate } from "../utils/axios.cjs";
+import { reqInit } from "./request/index.js";
+import { axiosCreate, CancelToken } from "../utils/axios.js";
 import * as cheerio from "cheerio";
 import * as fs from "fs";
 import * as path from "path";
@@ -26,15 +26,25 @@ const mkdirsSync = async (dirname) => {
 // 获取小说目录
 const getNovelChapters = async (novelId) => {
   let statusCode = null;
+  let cancel;
+  const timeout = setTimeout(() => {
+    if (cancel) {
+      cancel("请求超时，正在重新获取...");
+    }
+  }, 30000);
   const indexRes = await axiosCreate
     .get(
       `https://www.wenku8.net/novel/${novelId.length < 4 ? "0" : novelId.split("")[0]}/${novelId}/index.htm`,
       {
         ...reqInit().config,
+        cancelToken: new CancelToken((c) => {
+          cancel = c;
+        }),
       },
     )
     .catch(() => {});
-    
+  clearTimeout(timeout); //清除超时
+
   if (!indexRes) return getNovelChapters(novelId);
 
   if (indexRes && indexRes.status == 200) {
@@ -94,6 +104,8 @@ const getNovelChapters = async (novelId) => {
       return acc;
     }, []);
 
+    if (!novel_chapters.title) return await getNovelChapters(novelId);
+
     return novel_chapters;
   }
 };
@@ -105,9 +117,19 @@ const getChapterContent = async (novelId, chapterId, chapterTitle) => {
     novelId.toString().length < 4 ? "0" : novelId.toString().split("")[0];
   const url = `https://www.wenku8.net/novel/${urlPrefix}/${novelId}/${chapterId}.htm`;
   let statusCode = null;
+  let cancel;
+  const timeout = setTimeout(() => {
+    if (cancel) {
+      cancel("请求超时，正在重新获取...");
+    }
+  }, 30000);
+  clearTimeout(timeout); //清除超时
   const indexRes = await axiosCreate
     .get(url, {
       ...reqInit().config,
+      cancelToken: new CancelToken((c) => {
+        cancel = c;
+      }),
     })
     .catch((error) => {
       if (error.status === 404) {
@@ -115,6 +137,7 @@ const getChapterContent = async (novelId, chapterId, chapterTitle) => {
         // console.log(`章节内容不存在: ${url}`);
       }
     });
+  clearTimeout(timeout); //清除超时
 
   if (!indexRes && statusCode === 404) {
     if (getContentCount >= 3) {
@@ -146,8 +169,6 @@ const getChapterContent = async (novelId, chapterId, chapterTitle) => {
     return await getChapterContent(novelId, chapterId, chapterTitle);
   }
 
-  if (!indexRes) return false;
-
   const html = reqInit(indexRes).html;
   let $ = cheerio.load(html);
   const contentMain = $("#contentmain");
@@ -159,6 +180,10 @@ const getChapterContent = async (novelId, chapterId, chapterTitle) => {
   contentMain.find("#contentdp").replaceWith("");
 
   getContentCount = 0;
+
+  if (!contentMain.html())
+    return await getChapterContent(novelId, chapterId, chapterTitle);
+
   return contentMain.html();
 };
 
@@ -179,15 +204,25 @@ const downloadNovelImages = async (url, obj) => {
     return true;
   }
   let statusCode = null;
+  let cancel;
+  const timeout = setTimeout(() => {
+    if (cancel) {
+      cancel("请求超时，正在重新获取...");
+    }
+  }, 30000);
   const indexRes = await axiosCreate
     .get(url, {
       ...reqInit().config,
+      cancelToken: new CancelToken((c) => {
+        cancel = c;
+      }),
     })
     .catch((error) => {
       if (error.status === 404) {
         statusCode = 404;
       }
     });
+  clearTimeout(timeout); //清除超时
 
   if (!indexRes && statusCode === 404) {
     return false;

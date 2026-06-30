@@ -1,10 +1,9 @@
 import { EPub } from "@lesjoursfr/html-to-epub";
 import { load } from "cheerio";
-import { checkbox } from "@inquirer/prompts";
+import { checkbox, confirm } from "@inquirer/prompts";
 import path from "path";
-import { imageSize } from "image-size";
 import ora from "ora";
-import { existsSync, mkdirSync, readFileSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import {
   getNovelChapters,
   getChapterContent,
@@ -12,8 +11,8 @@ import {
 } from "../download.js";
 import { getBookText } from "../api/index.js";
 import { styleText } from "util";
+import { execSync } from "node:child_process";
 
-// const __dirname = import.meta.dirname; // 获取当前文件路径
 const spinner = ora();
 
 /**
@@ -22,7 +21,7 @@ const spinner = ora();
  * @param {boolean} isApp - 是否为APP
  * @param {string} dlType - 下载类型
  */
-const htmlToEpub = async (novel_id, isApp, dlType) => {
+export const htmlToEpub = async (novel_id, isApp, dlType) => {
   spinner.start(styleText(["magenta"], "正在获取小说目录..."));
   const novelData = await getNovelChapters(novel_id.toString());
   spinner.succeed(styleText(["magenta"], "小说目录获取成功"));
@@ -113,6 +112,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
       }
       let chapterContents = [];
       let epubCover = "";
+      let imgUrls = [];
       for (const chapter of item.children) {
         spinner.start(
           "开始下载：" +
@@ -185,6 +185,7 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
         $("#title").remove();
 
         if (chapter.title === "插图") {
+          imgUrls = [];
           const contentMain = $("#content");
           const imgList = contentMain
             .find("img")
@@ -196,8 +197,6 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
               downloadNovelImages(url, { novelName, chapterName }),
             ),
           );
-
-          const imgUrls = [];
 
           // 替换为本地图片地址
           contentMain.find("img").each((_, imgElement) => {
@@ -212,22 +211,32 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
             }
           });
 
-          for (const imgUrl of imgUrls) {
-            const coverSize = await new Promise(async (resolve, reject) => {
-              const imageBuffer = readFileSync(imgUrl);
-              resolve(imageSize(imageBuffer));
-            });
-            if (coverSize && coverSize.width / coverSize.height < 1) {
-              epubCover = imgUrl;
-              break;
-            }
-          }
+          epubCover = imgUrls[0] || "";
         }
 
         chapterContents.push({
           title: chapter.title,
           data: $("html").html(),
         });
+      }
+
+      const answer = await confirm({
+        message: "是否自定义封面？",
+        default: true,
+        transformer: (value) => (value ? "YES" : "NO"),
+      });
+
+      if (answer) {
+        const targetDir = path.join(
+          process.cwd(),
+          `/插图/${novelName}/${chapterName}`,
+        );
+
+        // 打开文件选择器
+        const command = `powershell.exe -Command "& {Add-Type -AssemblyName System.Windows.Forms; $FileDialog = New-Object System.Windows.Forms.OpenFileDialog; $FileDialog.InitialDirectory = '${targetDir}'; $result = $FileDialog.ShowDialog(); if ($result -eq 'OK') { Write-Output $FileDialog.FileName }}"`;
+        execSync(`chcp 65001`); // 设置编码为utf-8
+        const filePath = execSync(command);
+        epubCover = filePath.toString().trim() || imgUrls[0] || "";
       }
 
       const epub = new EPub(
@@ -269,5 +278,3 @@ const htmlToEpub = async (novel_id, isApp, dlType) => {
     ),
   );
 };
-
-export { htmlToEpub };

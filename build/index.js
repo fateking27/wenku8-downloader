@@ -1,30 +1,7 @@
 import { styleText } from "util";
-import {
-  existsSync,
-  writeFileSync,
-} from "fs";
+import { existsSync, writeFileSync } from "fs";
 import path from "path";
 import { copyDirectory } from "./copyDirectory.js";
-
-// function copyDirectory(src, dest) {
-//   if (!statSync(src).isDirectory()) return;
-
-//   if (!statSync(dest, { throwIfNoEntry: false })) {
-//     mkdirSync(dest, { recursive: true });
-//   }
-
-//   const files = readdirSync(src);
-//   for (const file of files) {
-//     const srcPath = `${src}/${file}`;
-//     const destPath = `${dest}/${file}`;
-
-//     if (statSync(srcPath).isDirectory()) {
-//       copyDirectory(srcPath, destPath);
-//     } else {
-//       copyFileSync(srcPath, destPath);
-//     }
-//   }
-// }
 
 const Plugin = {
   name: "plugin",
@@ -36,6 +13,31 @@ const Plugin = {
         writeFileSync(
           path.join(process.cwd(), "/dist/wenku8.json"),
           JSON.stringify({ cookie: "" }),
+          {
+            encoding: "utf-8",
+          },
+        );
+      }
+
+      if (!existsSync(path.join(process.cwd(), "/dist/proxy.config.json"))) {
+        writeFileSync(
+          path.join(process.cwd(), "/dist/proxy.config.json"),
+          JSON.stringify(
+            {
+              proxy: false,
+              noProxyUrls: [
+                "pic.777743.xyz",
+                "img.wenku8.com",
+                "www.wenku8.net/login.php",
+                "www.wenku8.net/index.php",
+                "www.wenku8.net/modules/article/search.php",
+                "www.wenku8.net/book",
+              ],
+              proxyList: ["127.0.0.1:10808"],
+            },
+            null,
+            2,
+          ),
           {
             encoding: "utf-8",
           },
@@ -76,7 +78,7 @@ const config = {
     },
   },
   minify: true,
-  sourcemap: "linked",
+  // sourcemap: "linked",
   // bytecode: true,
   plugins: [Plugin],
 };

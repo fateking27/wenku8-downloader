@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import { axiosCreate } from "../utils/axios.cjs";
-import { reqInit, wenku8Login } from "./request/index.cjs";
+import { axiosCreate } from "../utils/axios.js";
+import { reqInit, wenku8Login } from "./request/index.js";
 import ora from "ora";
 import { styleText } from "util";
 
@@ -17,16 +17,21 @@ export const getHotNovelList = async () => {
     });
   if (!indexRes) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
-    await wenku8Login();
+    // await wenku8Login();
     return await getHotNovelList();
   }
-  const cookies = indexRes.headers["set-cookie"];
-  if (!cookies) {
-    await wenku8Login();
-    return await getHotNovelList();
-  }
+  // const cookies = indexRes.headers["set-cookie"];
+  // if (!cookies) {
+  //   await wenku8Login();
+  //   return await getHotNovelList();
+  // }
   const $ = cheerio.load(reqInit(indexRes).html);
   const novelList = [];
+  const mark = $("#content").find(".grid>caption").text()?.trim() || null;
+  if (mark == "用户登录") {
+    await wenku8Login();
+    return await getHotNovelList();
+  }
   $("#right .block:eq(0)>.blockcontent")
     .find("li")
     .each((_, element) => {
@@ -37,7 +42,7 @@ export const getHotNovelList = async () => {
     });
   if (novelList.length === 0) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 等待5秒后重试
-    await wenku8Login();
+    // await wenku8Login();
     return await getHotNovelList();
   }
   spinner.succeed(styleText(["green"], "数据请求成功"));

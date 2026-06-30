@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import { axiosCreate } from "../utils/axios.cjs";
-import { reqInit } from "./request/index.cjs";
+import { axiosCreate } from "../utils/axios.js";
+import { reqInit } from "./request/index.js";
 import ora from "ora";
 import Table from "cli-table3";
 import { styleText } from "util";

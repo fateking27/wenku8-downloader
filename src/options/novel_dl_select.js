@@ -66,7 +66,8 @@ export const novel_dl_select = async (novelId, novel_detail) => {
   if (answer === 1) {
     await htmlToEpub(novelId, novel_detail.app, dlType);
   } else if (answer === 2) {
-    await htmlToTxt(novelId, novel_detail.app, dlType);
+    // await htmlToTxt(novelId, novel_detail.app, dlType);
+    await onlyTxt(novelId, dlType);
   } else if (answer === 3) {
     await onlyImage(novelId, novel_detail.app, dlType);
   } else if (answer === "only-txt") {

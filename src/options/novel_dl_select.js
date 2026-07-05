@@ -23,7 +23,7 @@ export const novel_dl_select = async (novelId, novel_detail) => {
         name: "Epub",
         value: 1,
         description: "Epub格式",
-        disabled: novel_detail.app ? "(该小说暂不支持下载Epub格式)" : false,
+        // disabled: novel_detail.app ? "(该小说暂不支持下载Epub格式)" : false,
       },
       {
         name: "TXT",
@@ -34,7 +34,7 @@ export const novel_dl_select = async (novelId, novel_detail) => {
         name: "插图",
         value: 3,
         description: "仅下载插图",
-        disabled: novel_detail.app ? "(该小说暂不支持下载插图)" : false,
+        // disabled: novel_detail.app ? "(该小说暂不支持下载插图)" : false,
       },
       {
         name: "取消",
@@ -53,12 +53,12 @@ export const novel_dl_select = async (novelId, novel_detail) => {
     default: 1,
     choices: [
       {
-        name: "全卷下载",
-        value: "all",
-      },
-      {
         name: "自定义分卷下载（多选）",
         value: "custom",
+      },
+      {
+        name: "全卷下载",
+        value: "all",
       },
     ],
   });

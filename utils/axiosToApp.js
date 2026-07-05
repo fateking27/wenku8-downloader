@@ -1,7 +1,8 @@
-const { create, CancelToken } = require("axios");
-const qs = require("qs");
+import Axios from "axios";
+import qs from "qs";
 
-const axios = create();
+const axios = Axios.create();
+const CancelToken = Axios.CancelToken;
 
 axios.interceptors.request.use(
   (config) => {
@@ -16,7 +17,7 @@ axios.interceptors.request.use(
     //只对POST请求做处理
     if (config.method === "post" && config.data) {
       config.data = qs.stringify(config.data);
-      console.log(config.data);
+      // console.log(config.data);
     }
 
     return config;
@@ -26,7 +27,4 @@ axios.interceptors.request.use(
   },
 );
 
-module.exports = {
-  axios,
-  CancelToken,
-};
+export { axios, CancelToken };

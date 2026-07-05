@@ -1,12 +1,13 @@
 {
-  "proxy": true,
+  "proxy": false,
   "noProxyUrls": [
     "pic.777743.xyz",
     "img.wenku8.com",
     "www.wenku8.net/login.php",
     "www.wenku8.net/index.php",
     "www.wenku8.net/modules/article/search.php",
-    "www.wenku8.net/book"
+    "www.wenku8.net/book",
+    "wenku8-relay.mewx.org"
   ],
-  "proxyList": ["127.0.0.1:10808"]
+  "proxyList": []
 }

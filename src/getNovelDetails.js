@@ -4,8 +4,8 @@ import { reqInit } from "./request/index.js";
 import ora from "ora";
 import Table from "cli-table3";
 import { styleText } from "util";
-// import { getBookMeta } from "./api/index.js";
-// import { xmlToJson } from "../utils/xmlToJson.js";
+import { getBookMeta } from "./api/index.js";
+import { xmlToJson } from "../utils/xmlToJson.js";
 
 const spinner = ora();
 let getNovelDetailCount = 0;
@@ -101,7 +101,6 @@ export const getNovelDetail = async (novelId) => {
     );
     return false;
   }
-  spinner.succeed(styleText("green", "小说详情获取成功"));
   const table = new Table({
     head: [
       "ID",
@@ -125,25 +124,27 @@ export const getNovelDetail = async (novelId) => {
     !novel_detail.latest_chapter &&
     !novel_detail.updatetime
   ) {
-    // await getBookMeta({
-    //   meta: "meta",
-    //   novel_id: novelId,
-    //   t: "0",
-    // }).then(async (res) => {
-    //   novel_detail.app = true;
-    //   const result = await xmlToJson(res.data);
-    //   result.metadata.data.forEach((item) => {
-    //     if (item.$.name === "BookLength") {
-    //       novel_detail.article_length = item.$.value;
-    //     } else if (item.$.name === "LastUpdate") {
-    //       novel_detail.updatetime = item.$.value;
-    //     } else if (item.$.name === "LatestSection") {
-    //       novel_detail.latest_chapter = item._;
-    //     }
-    //   });
-    // });
+    await getBookMeta({
+      meta: "meta",
+      novel_id: novelId,
+      t: "0",
+    }).then(async (res) => {
+      novel_detail.app = true;
+      const result = await xmlToJson(res.data);
+      result.metadata.data.forEach((item) => {
+        if (item.$.name === "BookLength") {
+          novel_detail.article_length = item.$.value;
+        } else if (item.$.name === "LastUpdate") {
+          novel_detail.updatetime = item.$.value;
+        } else if (item.$.name === "LatestSection") {
+          novel_detail.latest_chapter = item._;
+        }
+      });
+    });
     novel_detail.app = true;
   }
+
+  spinner.succeed(styleText("green", "小说详情获取成功"));
 
   //输出table表格
   table.push([

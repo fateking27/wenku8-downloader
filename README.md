@@ -8,7 +8,7 @@
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github)](https://github.com/fateking27/wenku8-downloader)
 ![GitHub License](https://img.shields.io/github/license/fateking27/wenku8-downloader)
 ![GitHub all releases](https://img.shields.io/github/downloads/fateking27/wenku8-downloader/total?color=blue&label=github%20downloads)
-[![GitHub releases](https://img.shields.io/badge/-download-blue?style=flat&label=download)](https://github.com/fateking27/wenku8-downloader/releases/latest)
+[![GitHub releases](https://img.shields.io/github/v/release/fateking27/wenku8-downloader?color=blue&label=download&sort=semver)](https://github.com/fateking27/wenku8-downloader/releases/latest)
 
 </div>
 
@@ -94,9 +94,7 @@ bun start
 
 1. **网络问题**：由于 wenku8 站点启用了 Cloudflare 防火墙，图片站点网络可能不稳定，在获取插图和内容时可能会出现延迟或失败，请耐心等待。
 
-2. **已下架小说**：对于已下架的小说，程序会自动切换到wenku8站点的接口进行下载，但此模式下仅支持 TXT 格式。
-
-3. **代理使用**：如遇访问困难，建议配置代理以提高下载成功率。
+2. **代理使用**：如遇访问困难，建议配置代理以提高下载成功率。
 
 ## 📸 效果预览
 

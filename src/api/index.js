@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { axios } from "../../utils/axiosToApp.cjs";
+import { axios } from "../../utils/axiosToApp.js";
 
 const baseURL = "https://wenku8-relay.mewx.org";
 
@@ -10,7 +10,7 @@ const toBase64String = (str) => {
 // 获取小说详情
 export const getBookMeta = async (data) => {
   return await axios.post(`${baseURL}`, {
-    appver: "1.28",
+    appver: "1.13",
     timetoken: dayjs().unix(),
     request: toBase64String(`action=book&do=meta&aid=${data.novel_id}&t=0`)
   });
@@ -24,7 +24,7 @@ export const getBookMeta = async (data) => {
  */
 export const getBookList = async (data) => {
   return await axios.post(`${baseURL}`, {
-    appver: "1.25-chibi-chapter-17d5f684",
+    appver: "1.13",
     request: toBase64String(`action=book&do=list&aid=${data.novel_id}&t=0`),
   });
 };
@@ -32,7 +32,7 @@ export const getBookList = async (data) => {
 // 获取小说章节内容
 export const getBookText = async (data) => {
   return await axios.post(`${baseURL}`, {
-    appver: "1.25-chibi-chapter-17d5f684",
+    appver: "1.13",
     request: toBase64String(
       `action=book&do=text&aid=${data.novel_id}&cid=${data.chapter_id}&t=0`,
     ),

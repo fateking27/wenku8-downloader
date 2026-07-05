@@ -106,7 +106,7 @@ export const htmlToEpub = async (novel_id, isApp, dlType) => {
         }
       });
 
-      if (existsSync(`${epubDirPath}/${chapterName}.epub`)) {
+      if (existsSync(`${epubDirPath}/${item.id}-${chapterName}.epub`)) {
         num++;
         continue;
       }
@@ -251,7 +251,7 @@ export const htmlToEpub = async (novel_id, isApp, dlType) => {
           content: chapterContents,
           verbose: true,
         },
-        epubDirPath + `/${chapterName}.epub`,
+        epubDirPath + `/${item.id}-${chapterName}.epub`,
       );
       await epub
         .render()

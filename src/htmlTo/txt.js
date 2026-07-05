@@ -73,6 +73,7 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
   }
 
   for (const item of chapterVolume) {
+    spinner.start(styleText(["magenta"], `正在下载${item.chapter}...`));
     if (item.children.length) {
       //将名称中的特殊字符替换
       // const chapterName = item.chapter.replace(/[\/:*?"<>|]/g, "：");
@@ -95,6 +96,16 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
         }
       });
 
+      if (existsSync(path.join(txtDirPath, `${item.id}-${item.chapter}.txt`))) {
+        spinner.succeed(
+          styleText(
+            ["greenBright"],
+            `《${item.chapter}》已下载，请在novels/txt目录下查看`,
+          ),
+        );
+        continue;
+      }
+
       for (const chapter of item.children) {
         if (chapter.title === "插图") {
           continue;
@@ -108,7 +119,6 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
         if (isApp) {
           html = "";
         } else {
-          spinner.stop();
           await getChapterContent(novel_id, chapter.id, {
             chapterName: item.chapter,
             contentTitle: chapter.title,
@@ -140,10 +150,14 @@ const htmlToTxt = async (novel_id, isApp, dlType) => {
                 },
               ],
             });
-        writeFileSync(`${txtDirPath}/${chapterName}.txt`, `\n\n${text}\n`, {
-          flag: "a", //追加写入
-          encoding: "utf-8",
-        });
+        writeFileSync(
+          `${txtDirPath}/${item.id}-${chapterName}.txt`,
+          `\n\n${text}\n`,
+          {
+            flag: "a", //追加写入
+            encoding: "utf-8",
+          },
+        );
         spinner.succeed(
           "下载完成：" +
             styleText(["magenta"], `${item.chapter}、${chapter.title}`),

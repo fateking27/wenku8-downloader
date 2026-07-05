@@ -73,7 +73,7 @@ export const onlyTxt = async (novel_id, dlType) => {
   for (const item of chapterVolume) {
     spinner.start(styleText(["magenta"], `正在下载${item.chapter}...`));
 
-    if (fs.existsSync(path.join(txtDirPath, `${item.chapter}.txt`))) {
+    if (fs.existsSync(path.join(txtDirPath, `${item.id}-${item.chapter}.txt`))) {
       spinner.succeed(
         styleText(
           ["greenBright"],
@@ -94,7 +94,7 @@ export const onlyTxt = async (novel_id, dlType) => {
       },
     );
     const txtStream = fs.createWriteStream(
-      path.join(txtDirPath, `${item.chapter}.txt`),
+      path.join(txtDirPath, `${item.id}-${item.chapter}.txt`),
     );
     res.data.pipe(txtStream);
     txtStream.on("error", (err) => {

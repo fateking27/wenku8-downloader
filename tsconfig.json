@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["bun-types"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*.ts", "build/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "dist", "@lesjoursfr", "novels", "插图"]
+}

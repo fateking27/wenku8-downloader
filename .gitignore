@@ -3,5 +3,7 @@
 /novels
 /插图
 /dist
+/*.tsbuildinfo
+/docs
 
 /logs/*

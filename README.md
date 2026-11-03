@@ -29,7 +29,7 @@
 ### 方式一：直接使用（推荐）
 
 [下载](https://github.com/fateking27/wenku8-downloader/releases/latest) 最新版本，解压后双击运行
-`wenku8-downloader.exe`。
+`wenku8-downloader.exe`
 
 ### 方式二：源码运行
 
@@ -129,7 +129,7 @@ novels/
 bun start          # 运行
 bun run dev        # 开发运行
 bun run typecheck  # tsc --noEmit
-bun test           # 单元测试（含版权受限回归）
+bun test           # 单元测试
 bun run build      # 打包为可执行文件
 bun scripts/smoke.ts  # 联网自检
 ```
